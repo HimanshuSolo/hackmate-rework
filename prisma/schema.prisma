@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,4 +6,91 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum WorkingStyle {
+  ASYNC
+  REAL_TIME
+  FLEXIBLE
+  STRUCTURED
+}
+
+enum CollaborationPref {
+  REMOTE
+  HYBRID
+  IN_PERSON
+  DOESNT_MATTER
+}
+
+model User {
+  id String   @id @unique
+  name        String
+  location    String
+  personalityTags    String[]
+  workingStyle WorkingStyle
+  collaborationPref CollaborationPref
+  currentRole       String
+  yearsExperience   Int
+  domainExpertise   String[] 
+  skills      String[] 
+  rolesOpenTo       String[]   
+  pastProjects Project[]
+  startupInfo Startupinfo?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
+
+
+enum StartupStage {
+  IDEA
+  MVP
+  SCALING
+  EXITED
+}
+
+enum CommitmentLevel {
+  EXPLORING
+  BUILDING
+  LAUNCHING
+  FULL_TIME_READY
+}
+
+model Startupinfo{
+  id  String   @id @unique
+  userId      String@unique
+  startupStage      StartupStage
+  startupGoals      String
+  startupCommitment CommitmentLevel
+  lookingFor        String[]
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model ContactInfo{
+    id          String   @id @default(cuid())
+    userId      String
+    email       String? @unique
+    linkedinUrl  String? @unique
+    scheduleUrl  String? @unique
+}
+
+
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  link        String?
+  userId      String @unique
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+
+model UserLocation {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  latitude  Float
+  longitude Float
+  geohash   String
+
+  @@index([geohash])
 }
