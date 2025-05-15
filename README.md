@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🚀 Hackmate
 
-First, run the development server:
+**Hackmate** is a swipe-based matchmaking platform designed to help founders and builders discover potential co-founders, collaborators, or indie hackers to work with — Tinder-style.
+
+No social profiles, no fluff. Just raw experience, aligned intent, and mutual interest.
+
+---
+
+## 🧠 What is Hackmate?
+
+A real-time matchmaking app where users:
+
+- Create a profile with their skillset, experience, and goals
+- Swipe right to express interest in working with someone
+- Get matched if there's a mutual right swipe
+- View new matches in a dynamic queue
+
+Hackmate is built for fast, low-friction connections in startup ecosystems, hackathons, and builder communities.
+
+---
+
+## 💡 Key Features
+
+- 🃏 **Swipe-based interface** – Discover people by swiping right or left
+- ⚡️ **Real-time match queue** – Get notified instantly when you match
+- 🔒 **No social pressure** – No likes shown unless it's mutual
+- 🧰 **Skill-first profiles** – Show what you’ve built, not just where you studied
+- 🧠 **Cache-accelerated backend** – Uses Redis for real-time interactions
+
+---
+
+## ⚙️ Tech Stack
+
+### 🖥 Frontend
+- Next.js 
+- Tailwind CSS for rapid UI styling
+
+### 🛠 Backend
+- Redis for real-time caching
+- PostgreSQL 
+
+### ☁️ Infrastructure
+- Redis 
+- Vercel 
+
+---
+
+## 🧱 Redis Store Structure
+
+| Key Purpose       | Redis Type | Key Format          | Example Usage            |
+|-------------------|------------|----------------------|---------------------------|
+| Likes Given       | `SET`      | `likes:<user_id>`    | Prevent duplicate swipes |
+| Match Queue       | `LIST`     | `matches:<user_id>`  | Fetch mutual matches     |
+| User Profiles     | `HASH`     | `user:<user_id>`     | Cached basic user info   |
+
+> Compatibility scores and seen/blocked users are handled through API logic, not Redis.
+
+---
+
+## 📦 Local Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/your-username/hackmate.git
+cd hackmate
+
+# Install dependencies
+npm install
+
+# Setup Redis (using Docker or cloud URL)
+docker run -p 6379:6379 redis
+# OR use Aiven/Upstash and set REDIS_URL
+
+# Start the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+````
+
+> Make sure you set environment variables:
+
+```env
+REDIS_URL=redis://localhost:6379
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 Future Plans
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* 🎯 Interest-based filtering (builder vs designer vs product)
+* 🌐 Geo/Timezone-based matching
+* 🛠 Project pitch cards and mini portfolios
+* 🤖 AI-based match suggestions
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Hackmate is still in its early indie stage. PRs, ideas, and collaborators are welcome. Create an issue or reach out directly.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📜 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License — feel free to fork and build your own version.
+
+
+
+Let me know if you'd like to include:
+- An architectural diagram
+- Swagger/OpenAPI documentation
+- or a deploy button for one-click setup on Railway/Vercel
+
+I can also tailor this for a `monorepo` if your backend/frontend are in one project.
