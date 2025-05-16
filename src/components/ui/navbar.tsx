@@ -15,14 +15,13 @@ import {
 
 const navigation = [
   { name: 'Explore', href: '/explore' },
-  { name: 'Chat', href: '/chat' },
-  { name: 'Events', href: '/events' },
+  { name: 'Profile', href: '/profile' },
   { name: 'Admin', href: '/admin', requiresAdmin: true },
 ]
 
 export const Navbar = () => {
   const pathname = usePathname()
-  const isAdmin = true // Replace with your actual admin check
+  const isAdmin = false // Replace with your actual admin check
 
   return (
     <nav className="fixed top-0 z-50 w-full h-16 backdrop-blur-md bg-white/30 dark:bg-gray-900/30 border-b border-gray-200/30">
