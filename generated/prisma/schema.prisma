@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkingStyle {
+  ASYNC
+  REAL_TIME
+  FLEXIBLE
+  STRUCTURED
+}
+
+enum CollaborationPref {
+  REMOTE
+  HYBRID
+  IN_PERSON
+  DOESNT_MATTER
+}
+
+model User {
+  id                String            @id @unique
+  name              String
+  avatarUrl         String?
+  location          String
+  personalityTags   String[]
+  workingStyle      WorkingStyle
+  collaborationPref CollaborationPref
+  currentRole       String
+  yearsExperience   Int
+  domainExpertise   String[]
+  skills            String[]
+  rolesOpenTo       String[]
+  pastProjects      Project[]
+  startupInfo       Startupinfo?
+  reportsFiled      Report[]          @relation("Reporter")
+  reportsReceived   Report[]          @relation("Reported")
+  matchesInitiated  Match[]           @relation("UserA")
+  matchesReceived   Match[]           @relation("UserB")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+enum StartupStage {
+  IDEA
+  MVP
+  SCALING
+  EXITED
+}
+
+enum CommitmentLevel {
+  EXPLORING
+  BUILDING
+  LAUNCHING
+  FULL_TIME_READY
+}
+
+model Startupinfo {
+  id                String          @id @unique
+  userId            String          @unique
+  startupStage      StartupStage
+  startupGoals      String
+  startupCommitment CommitmentLevel
+  lookingFor        String[]
+  user              User            @relation(fields: [userId], references: [id])
+}
+
+model ContactInfo {
+  id          String  @id @default(cuid())
+  userId      String
+  email       String? @unique
+  linkedinUrl String? @unique
+  scheduleUrl String? @unique
+}
+
+model Project {
+  id          String  @id @default(cuid())
+  name        String
+  description String
+  link        String?
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model UserLocation {
+  id        String @id @default(cuid())
+  userId    String @unique
+  latitude  Float
+  longitude Float
+  geohash   String
+
+  @@index([geohash])
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  reportedId String
+  reporterId String
+  reason     String
+  createdAt  DateTime @default(now())
+  reported   User     @relation("Reported", fields: [reportedId], references: [id])
+  reporter   User     @relation("Reporter", fields: [reporterId], references: [id])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+
+  userA User @relation("UserA", fields: [userAId], references: [id])
+  userB User @relation("UserB", fields: [userBId], references: [id])
+
+  @@unique([userAId, userBId])
+}
