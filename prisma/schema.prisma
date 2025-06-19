@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -43,6 +42,13 @@ model User {
   matchesReceived   Match[]           @relation("UserB")
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+}
+
+model Admin{
+  id                String            @id @unique
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+
 }
 
 enum StartupStage {
