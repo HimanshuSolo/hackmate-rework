@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum WorkingStyle {
@@ -42,13 +43,13 @@ model User {
   matchesReceived   Match[]           @relation("UserB")
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+  Admin Admin[]
 }
 
 model Admin{
-  id                String            @id @unique
-  userId            String
+  id          String  @id @default(cuid())
+  userId      String
   user              User            @relation(fields: [userId], references: [id])
-
 }
 
 enum StartupStage {
@@ -79,6 +80,7 @@ model ContactInfo {
   id          String  @id @default(cuid())
   userId      String
   email       String? @unique
+  twitterUrl String? @unique
   linkedinUrl String? @unique
   scheduleUrl String? @unique
 }

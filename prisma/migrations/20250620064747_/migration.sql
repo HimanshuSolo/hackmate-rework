@@ -31,6 +31,14 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Admin" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Startupinfo" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -122,6 +130,9 @@ CREATE INDEX "UserLocation_geohash_idx" ON "UserLocation"("geohash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Match_userAId_userBId_key" ON "Match"("userAId", "userBId");
+
+-- AddForeignKey
+ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Startupinfo" ADD CONSTRAINT "Startupinfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
