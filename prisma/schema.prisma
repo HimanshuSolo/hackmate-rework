@@ -34,7 +34,6 @@ model User {
   yearsExperience   Int
   domainExpertise   String[]
   skills            String[]
-  rolesOpenTo       String[]
   pastProjects      Project[]
   startupInfo       Startupinfo?
   reportsFiled      Report[]          @relation("Reporter")
@@ -67,7 +66,7 @@ enum CommitmentLevel {
 }
 
 model Startupinfo {
-  id                String          @id @unique
+  id          String  @id @default(cuid())
   userId            String          @unique
   startupStage      StartupStage
   startupGoals      String

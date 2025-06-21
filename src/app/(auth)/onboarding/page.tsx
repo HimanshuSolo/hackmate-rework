@@ -3,6 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
+import axios from "axios" // Add axios import
+import { useState } from "react" // For loading state
+import { useRouter } from "next/navigation" // For navigation after submission
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -24,6 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { X, Plus } from "lucide-react"
+import Image from "next/image"
+import { useUser } from "@clerk/nextjs"
 
 // Constants for file upload
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -50,15 +55,6 @@ const formSchema = z.object({
   personalityTags: z.array(z.string()).min(1, { message: "Select at least one personality trait" }),
   domainExpertise: z.array(z.string()).min(1, { message: "Select at least one domain" }),
   skills: z.array(z.string()).min(1, { message: "Select at least one skill" }),
-  rolesOpenTo: z.array(z.string()).min(1, { message: "Select at least one role" }),
-  resume: z
-    .custom<FileList>()
-    .refine((files) => files?.length <= 1, "Only one resume file is allowed")
-    .refine(
-      (files) => !files?.[0] || files?.[0]?.size <= 10 * 1024 * 1024,
-      "Max file size is 10MB"
-    )
-    .optional(),
   pastProjects: z.array(z.object({
     name: z.string().min(1, "Project name is required"),
     description: z.string().min(1, "Project description is required"),
@@ -69,6 +65,12 @@ const formSchema = z.object({
     goals: z.string().min(50, "Please describe your startup goals in detail"),
     commitment: z.enum(['EXPLORING', 'BUILDING', 'LAUNCHING', 'FULL_TIME_READY']),
     lookingFor: z.array(z.string()).min(1, "Select what you're looking for"),
+  }).optional(),
+  contactInfo: z.object({
+    email: z.string().email("Please enter a valid email").optional(),
+    twitterUrl: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
+    linkedinUrl: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
+    scheduleUrl: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
   }).optional(),
 })
 
@@ -93,6 +95,10 @@ const domainOptions = [
 ]
 
 export default function OnboardingForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const {  user } = useUser();
+  const router = useRouter()
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -106,8 +112,13 @@ export default function OnboardingForm() {
       personalityTags: [],
       domainExpertise: [],
       skills: [],
-      rolesOpenTo: [],
       pastProjects: [],
+      contactInfo: {
+        email: "",
+        twitterUrl: "",
+        linkedinUrl: "",
+        scheduleUrl: ""
+      }
     },
   })
 
@@ -117,28 +128,64 @@ export default function OnboardingForm() {
   })
 
   async function onSubmit(values: FormValues) {
+    setIsSubmitting(true)
+    
     try {
-      let avatarUrl = null
-      let resumeUrl = null
-
+      // Create FormData object for multipart/form-data submission
+      const formData = new FormData()
+      
+      // Add avatar file if it exists
       if (values.avatar?.[0]) {
-        // Upload avatar logic here
+        formData.append('avatar', values.avatar[0])
       }
-
-      if (values.resume?.[0]) {
-        // Upload resume logic here
+      
+      // Generate a unique ID for the user
+      const userId = user?.id;
+      
+      // Prepare the user data object
+      const userData = {
+        id: userId,
+        name: values.name,
+        location: values.location,
+        personalityTags: values.personalityTags,
+        workingStyle: values.workingStyle,
+        collaborationPref: values.collaborationPref,
+        currentRole: values.currentRole,
+        yearsExperience: values.yearsExperience,
+        domainExpertise: values.domainExpertise || [],
+        skills: values.skills,
+        pastProjects: values.pastProjects,
+        startupInfo: values.startupInfo,
+        contactInfo: values.contactInfo
       }
-
-      const formData = {
-        ...values,
-        avatarUrl,
-        resumeUrl,
-      }
-
-      console.log(formData)
-      // await axios.post('/api/onboarding', formData)
+      
+      // Add the userData as a JSON string
+      formData.append('userData', JSON.stringify(userData))
+      
+      // Submit the form data to the API
+      const response = await axios.post('/api/user', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      
+      console.log('Profile created successfully:', response.data)
+      
+      // Redirect to another page or show success message
+      router.push('/explore') // Adjust the route as needed
+      
     } catch (error) {
       console.error('Error submitting form:', error)
+      // Handle error - show message to user
+      if (axios.isAxiosError(error)) {
+        // Handle specific axios errors
+        const errorMessage = error.response?.data?.message || 'Failed to create profile'
+        alert(errorMessage) // Consider using a toast or other UI component
+      } else {
+        alert('An unexpected error occurred')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -192,10 +239,12 @@ export default function OnboardingForm() {
                 <FormControl>
                   <div className="flex items-center gap-4">
                     {value && (
-                      <img
+                      <Image
                         src={URL.createObjectURL(value[0])}
                         alt="Profile preview"
                         className="w-20 h-20 rounded-full object-cover"
+                        width={100}
+                        height={100}
                       />
                     )}
                     <Input
@@ -347,6 +396,36 @@ export default function OnboardingForm() {
 
             <FormField
               control={form.control}
+              name="domainExpertise"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Domain Expertise</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-wrap gap-2 p-4 border rounded-md">
+                      {domainOptions.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant={field.value.includes(tag) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const newValue = field.value.includes(tag)
+                              ? field.value.filter((t) => t !== tag)
+                              : [...field.value, tag]
+                            field.onChange(newValue)
+                          }}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="skills"
               render={({ field }) => (
                 <FormItem>
@@ -374,6 +453,74 @@ export default function OnboardingForm() {
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="space-y-6 border rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium">Contact Information</h3>
+            
+            <FormField
+              control={form.control}
+              name="contactInfo.email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="your@email.com" {...field} value={field.value || ''} />
+                  </FormControl>
+                  <FormDescription>
+                    Your public contact email (can be different from your login email)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <FormField
+                control={form.control}
+                name="contactInfo.twitterUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Twitter Profile (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://twitter.com/yourusername" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contactInfo.linkedinUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>LinkedIn Profile (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://linkedin.com/in/yourusername" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contactInfo.scheduleUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Scheduling Link (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://calendly.com/yourusername" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormDescription>
+                      Link to your Calendly, Cal.com or other scheduling service
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -547,8 +694,8 @@ export default function OnboardingForm() {
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Complete Profile
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Profile..." : "Complete Profile"}
           </Button>
         </form>
       </Form>
