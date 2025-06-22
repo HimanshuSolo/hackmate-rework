@@ -10,7 +10,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 const userCreateSchema = z.object({ 
   id: z.string(),
   name: z.string().min(2),
-  // We'll handle file upload separately, so this is optional
+  description: z.string().min(50, { message: "Tell us a bit more about yourself (min 50 characters)" }).optional(),
   avatarUrl: z.string().optional(),
   location: z.string(),
   personalityTags: z.array(z.string()),
@@ -55,6 +55,19 @@ export async function POST(request: Request) {
 
     const id = validatedData.id;
 
+    // Check if user already exists
+    const existingUser = await prismaClient.user.findUnique({
+      where: { id : id }
+    });
+
+    if (existingUser) {
+      // Return error if user already exists
+      return NextResponse.json({ 
+        error: 'User already exists', 
+        message: 'A user with this ID already exists. Use the update endpoint instead.' 
+      }, { status: 409 });
+    }
+
     let cloudLink = "";
     // Handle file upload if avatar is provided
     if (avatarFile) {
@@ -79,7 +92,7 @@ export async function POST(request: Request) {
         
         // Upload to Cloudinary and get the secure URL
         const cloudResponse = await uploadOnCloudinary(filePath);
-        if (cloudResponse && cloudResponse.secure_url) {
+        if (cloudResponse) {
           cloudLink = cloudResponse.secure_url;
           console.log(`Uploaded to Cloudinary: ${cloudLink}`);
         } else {
@@ -91,185 +104,72 @@ export async function POST(request: Request) {
     }
     
     try {
-      // Check if user already exists
-      const existingUser = await prismaClient.user.findUnique({
-        where: { id }
-      });
+      // Create a new user
+      // Use a transaction to ensure all database operations succeed or fail together
+      const user = await prismaClient.$transaction(async (tx) => {
+        // Create the base user first
+        const createdUser = await tx.user.create({
+          data: {
+            id,
+            name: validatedData.name,
+            description : validatedData.description,
+            avatarUrl: cloudLink,
+            location: validatedData.location,
+            personalityTags: validatedData.personalityTags,
+            workingStyle: validatedData.workingStyle,
+            collaborationPref: validatedData.collaborationPref,
+            currentRole: validatedData.currentRole,
+            yearsExperience: validatedData.yearsExperience,
+            domainExpertise: validatedData.domainExpertise,
+            skills: validatedData.skills,
+          }
+        });
 
-      if (existingUser) {
-        // Update user instead of creating a new one
-        const user = await prismaClient.$transaction(async (tx) => {
-          // Update the base user
-          const updatedUser = await tx.user.update({
-            where: { id },
+        // Create contact info if provided
+        if (validatedData.contactInfo) {
+          await tx.contactInfo.create({
             data: {
-              name: validatedData.name,
-              avatarUrl: cloudLink || existingUser.avatarUrl,
-              location: validatedData.location,
-              personalityTags: validatedData.personalityTags,
-              workingStyle: validatedData.workingStyle,
-              collaborationPref: validatedData.collaborationPref,
-              currentRole: validatedData.currentRole,
-              yearsExperience: validatedData.yearsExperience,
-              domainExpertise: validatedData.domainExpertise,
-              skills: validatedData.skills,
+              userId: createdUser.id,
+              email: validatedData.contactInfo.email,
+              twitterUrl: validatedData.contactInfo.twitterUrl || null,
+              linkedinUrl: validatedData.contactInfo.linkedinUrl || null,
+              scheduleUrl: validatedData.contactInfo.scheduleUrl || null
             }
           });
-
-           // Handle contact info if provided
-    if (validatedData.contactInfo) {
-      // Check if contact info exists
-      const existingContactInfo = await tx.contactInfo.findFirst({
-        where: { userId: id }
-      });
-      
-      if (existingContactInfo) {
-        // Update existing contact info
-        await tx.contactInfo.update({
-          where: { id: existingContactInfo.id },
-          data: {
-            email: validatedData.contactInfo.email,
-            twitterUrl: validatedData.contactInfo.twitterUrl || null,
-            linkedinUrl: validatedData.contactInfo.linkedinUrl || null,
-            scheduleUrl: validatedData.contactInfo.scheduleUrl || null
-          }
-        });
-      } else {
-        // Create new contact info
-        await tx.contactInfo.create({
-          data: {
-            userId: id,
-            email: validatedData.contactInfo.email,
-            twitterUrl: validatedData.contactInfo.twitterUrl || null,
-            linkedinUrl: validatedData.contactInfo.linkedinUrl || null,
-            scheduleUrl: validatedData.contactInfo.scheduleUrl || null
-          }
-        });
-      }
-    }
-
-          
-          
-          // Handle past projects if provided
-          if (validatedData.pastProjects) {
-            // Delete existing projects
-            await tx.project.deleteMany({
-              where: { userId: id }
-            });
-            
-            // Create new projects
-            for (const project of validatedData.pastProjects) {
-              await tx.project.create({
-                data: {
-                  name: project.name,
-                  description: project.description,
-                  link: project.link,
-                  userId: id
-                }
-              });
-            }
-          }
-          
-          // Handle startup info if provided
-          if (validatedData.startupInfo) {
-            // Check if startup info exists
-            const existingStartupInfo = await tx.startupinfo.findUnique({
-              where: { userId: id }
-            });
-            
-            if (existingStartupInfo) {
-              await tx.startupinfo.update({
-                where: { userId: id },
-                data: {
-                  startupStage: validatedData.startupInfo.stage,
-                  startupGoals: validatedData.startupInfo.goals,
-                  startupCommitment: validatedData.startupInfo.commitment,
-                  lookingFor: validatedData.startupInfo.lookingFor
-                }
-              });
-            } else {
-              await tx.startupinfo.create({
-                data: {
-                  userId: id,
-                  startupStage: validatedData.startupInfo.stage,
-                  startupGoals: validatedData.startupInfo.goals,
-                  startupCommitment: validatedData.startupInfo.commitment,
-                  lookingFor: validatedData.startupInfo.lookingFor
-                }
-              });
-            }
-          }
-          
-          return updatedUser;
-        });
+        }
         
-        return NextResponse.json(user, { status: 200 });
-      } else {
-        // Create a new user
-        // Use a transaction to ensure all database operations succeed or fail together
-        const user = await prismaClient.$transaction(async (tx) => {
-          // Create the base user first
-          const createdUser = await tx.user.create({
+        // Create past projects if provided
+        if (validatedData.pastProjects && validatedData.pastProjects.length > 0) {
+          for (const project of validatedData.pastProjects) {
+            await tx.project.create({
+              data: {
+                name: project.name,
+                description: project.description,
+                link: project.link,
+                userId: createdUser.id
+              }
+            });
+          }
+        }
+        
+        // Create startup info if provided
+        if (validatedData.startupInfo) {
+          await tx.startupinfo.create({
             data: {
-              id,
-              name: validatedData.name,
-              avatarUrl: cloudLink,
-              location: validatedData.location,
-              personalityTags: validatedData.personalityTags,
-              workingStyle: validatedData.workingStyle,
-              collaborationPref: validatedData.collaborationPref,
-              currentRole: validatedData.currentRole,
-              yearsExperience: validatedData.yearsExperience,
-              domainExpertise: validatedData.domainExpertise,
-              skills: validatedData.skills,
+              userId: createdUser.id,
+              startupStage: validatedData.startupInfo.stage,
+              startupGoals: validatedData.startupInfo.goals,
+              startupCommitment: validatedData.startupInfo.commitment,
+              lookingFor: validatedData.startupInfo.lookingFor
             }
           });
+        }
+        
+        // Return the created user
+        return createdUser;
+      });
 
-           if (validatedData.contactInfo) {
-            await tx.contactInfo.create({
-              data: {
-                userId: createdUser.id,
-                email: validatedData.contactInfo.email,
-                twitterUrl: validatedData.contactInfo.twitterUrl || null,
-                linkedinUrl: validatedData.contactInfo.linkedinUrl || null,
-                scheduleUrl: validatedData.contactInfo.scheduleUrl || null
-              }
-            });
-          }
-          
-          // Create past projects if provided
-          if (validatedData.pastProjects && validatedData.pastProjects.length > 0) {
-            for (const project of validatedData.pastProjects) {
-              await tx.project.create({
-                data: {
-                  name: project.name,
-                  description: project.description,
-                  link: project.link,
-                  userId: createdUser.id
-                }
-              });
-            }
-          }
-          
-          // Create startup info if provided
-          if (validatedData.startupInfo) {
-            await tx.startupinfo.create({
-              data: {
-                userId: createdUser.id,
-                startupStage: validatedData.startupInfo.stage,
-                startupGoals: validatedData.startupInfo.goals,
-                startupCommitment: validatedData.startupInfo.commitment,
-                lookingFor: validatedData.startupInfo.lookingFor
-              }
-            });
-          }
-          
-          // Return the created user
-          return createdUser;
-        });
-
-        return NextResponse.json(user, { status: 201 });
-      }
+      return NextResponse.json(user, { status: 201 });
     } catch (dbError) {
       console.error('Database operation error:', dbError);
       if (dbError instanceof PrismaClientKnownRequestError && dbError.code === 'P2002') {

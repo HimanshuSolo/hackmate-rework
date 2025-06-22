@@ -14,7 +14,7 @@ import {
 } from './dropdown-menu'
 
 const navigation = [
-  { name: 'Explore', href: '/' },
+  { name: 'Explore', href: '/explore' },
   { name: 'Profile', href: '/profile' },
   { name: 'Admin', href: '/admin', requiresAdmin: true },
 ]

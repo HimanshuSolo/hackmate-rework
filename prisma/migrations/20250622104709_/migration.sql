@@ -14,6 +14,7 @@ CREATE TYPE "CommitmentLevel" AS ENUM ('EXPLORING', 'BUILDING', 'LAUNCHING', 'FU
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "avatarUrl" TEXT,
     "location" TEXT NOT NULL,
     "personalityTags" TEXT[],
@@ -23,7 +24,6 @@ CREATE TABLE "User" (
     "yearsExperience" INTEGER NOT NULL,
     "domainExpertise" TEXT[],
     "skills" TEXT[],
-    "rolesOpenTo" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -109,10 +109,10 @@ CREATE TABLE "Match" (
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Startupinfo_id_key" ON "Startupinfo"("id");
+CREATE UNIQUE INDEX "Startupinfo_userId_key" ON "Startupinfo"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Startupinfo_userId_key" ON "Startupinfo"("userId");
+CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ContactInfo_email_key" ON "ContactInfo"("email");
@@ -140,6 +140,9 @@ ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") RE
 
 -- AddForeignKey
 ALTER TABLE "Startupinfo" ADD CONSTRAINT "Startupinfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

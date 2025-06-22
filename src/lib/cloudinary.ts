@@ -17,6 +17,7 @@ cloudinary.config({
           fs.unlinkSync(localFilePath);
           return response;
   
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
           fs.unlinkSync(localFilePath)
           return null;

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -17,11 +17,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Edit } from 'lucide-react'
+import { Edit, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
+import { useUser } from "@clerk/nextjs"
+import axios from 'axios'
 
 type Project = {
   id: string
@@ -30,10 +30,18 @@ type Project = {
   link?: string
 }
 
+type ContactInfo = {
+  id?: string
+  email?: string
+  twitterUrl?: string
+  linkedinUrl?: string
+  scheduleUrl?: string
+}
+
 type User = {
   id: string
   name: string
-  avatarUrl: string
+  avatarUrl?: string
   location: string
   personalityTags: string[]
   workingStyle: 'ASYNC' | 'REAL_TIME' | 'FLEXIBLE' | 'STRUCTURED'
@@ -42,56 +50,99 @@ type User = {
   yearsExperience: number
   domainExpertise: string[]
   skills: string[]
-  rolesOpenTo: string[]
-  pastProjects: Project[]
+  rolesOpenTo?: string[]
+  pastProjects?: Project[]
   startupInfo?: {
     stage: 'IDEA' | 'MVP' | 'SCALING' | 'EXITED'
     goals: string
     commitment: 'EXPLORING' | 'BUILDING' | 'LAUNCHING' | 'FULL_TIME_READY'
     lookingFor: string[]
   }
-}
-
-// Mock user data
-const mockUser: User = {
-  id: "1",
-  name: "John Doe",
-  avatarUrl: "https://github.com/shadcn.png",
-  location: "San Francisco, CA",
-  personalityTags: ["Problem Solver", "Creative", "Team Player"],
-  workingStyle: "FLEXIBLE",
-  collaborationPref: "HYBRID",
-  currentRole: "Senior Software Engineer",
-  yearsExperience: 5,
-  domainExpertise: ["SaaS", "FinTech", "AI/ML"],
-  skills: ["JavaScript", "React", "Node.js", "Python"],
-  rolesOpenTo: ["Technical Co-Founder", "CTO", "Lead Engineer"],
-  pastProjects: [
-    {
-      id: "p1",
-      name: "AI-Powered Financial Assistant",
-      description: "Built a personal finance management tool using ML algorithms",
-      link: "https://github.com/project1"
-    },
-    {
-      id: "p2",
-      name: "E-commerce Platform",
-      description: "Developed a scalable marketplace solution",
-      link: "https://github.com/project2"
-    }
-  ],
-  startupInfo: {
-    stage: "MVP",
-    goals: "Building a next-generation fintech platform for small businesses",
-    commitment: "FULL_TIME_READY",
-    lookingFor: ["Business Development", "Marketing", "UI/UX Design"]
-  }
+  contactInfo?: ContactInfo
 }
 
 export default function Profile() {
   const router = useRouter()
-  const [user] = useState<User>(mockUser)
+  const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn } = useUser()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+
+  useEffect(() => {
+    // Only fetch user data when Clerk has loaded and user is signed in
+    if (clerkLoaded && isSignedIn && clerkUser) {
+      fetchUserData(clerkUser.id);
+    } else if (clerkLoaded && !isSignedIn) {
+      // Redirect to sign in if not signed in
+      router.push('/sign-in');
+    }
+  }, [clerkLoaded, isSignedIn, clerkUser, router]);
+
+  const fetchUserData = async (userId: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/user/${userId}`);
+      setUser(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to load profile data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !clerkLoaded) {
+    return (
+      <div className="container mx-auto py-20 flex justify-center items-center">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-primary" />
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-20">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center text-red-500">Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center">{error}</p>
+            <div className="flex justify-center mt-4">
+              <Button onClick={() => fetchUserData(clerkUser!.id)}>
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto py-20">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Profile Not Found</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center">You haven't completed your profile yet.</p>
+            <div className="flex justify-center mt-4">
+              <Button onClick={() => router.push('/onboarding')}>
+                Complete Your Profile
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -112,8 +163,8 @@ export default function Profile() {
           <Card>
             <CardHeader className="flex flex-row items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.avatarUrl} />
-                <AvatarFallback>{user.name[0]}</AvatarFallback>
+                <AvatarImage src={user.avatarUrl || ''} />
+                <AvatarFallback>{user.name?.[0] || '?'}</AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">{user.name}</CardTitle>
@@ -124,6 +175,15 @@ export default function Profile() {
                 </div>
               </div>
             </CardHeader>
+            {user.description && (
+            <div className="px-6 pb-2">
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-2">About</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap">{user.description}</p>
+              </div>
+            </div>
+          )}
+
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">Personality Traits</h3>
@@ -151,29 +211,71 @@ export default function Profile() {
                   ))}
                 </div>
               </div>
+              
+              {user.contactInfo && (
+                <div>
+                  <h3 className="font-medium mb-2">Contact</h3>
+                  <div className="space-y-2">
+                    {user.contactInfo.email && (
+                      <p className="text-sm">
+                        <span className="font-medium">Email: </span>
+                        <a href={`mailto:${user.contactInfo.email}`} className="text-blue-500 hover:underline">
+                          {user.contactInfo.email}
+                        </a>
+                      </p>
+                    )}
+                    {user.contactInfo.linkedinUrl && (
+                      <p className="text-sm">
+                        <span className="font-medium">LinkedIn: </span>
+                        <a href={user.contactInfo.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                          {user.contactInfo.linkedinUrl}
+                        </a>
+                      </p>
+                    )}
+                    {user.contactInfo.twitterUrl && (
+                      <p className="text-sm">
+                        <span className="font-medium">Twitter: </span>
+                        <a href={user.contactInfo.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                          {user.contactInfo.twitterUrl}
+                        </a>
+                      </p>
+                    )}
+                    {user.contactInfo.scheduleUrl && (
+                      <p className="text-sm">
+                        <span className="font-medium">Schedule a meeting: </span>
+                        <a href={user.contactInfo.scheduleUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                          {user.contactInfo.scheduleUrl}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           {/* Past Projects */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Past Projects</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {user.pastProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="p-4 rounded-lg border hover:bg-accent cursor-pointer"
-                  onClick={() => setSelectedProject(project)}
-                >
-                  <h3 className="font-medium">{project.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {project.description}
-                  </p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          {user.pastProjects && user.pastProjects.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Past Projects</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {user.pastProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="p-4 rounded-lg border hover:bg-accent cursor-pointer"
+                    onClick={() => setSelectedProject(project)}
+                  >
+                    <h3 className="font-medium">{project.name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {project.description}
+                    </p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -185,11 +287,15 @@ export default function Profile() {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Working Style</h3>
-                <p className="mt-1">{user.workingStyle.charAt(0) + user.workingStyle.slice(1).toLowerCase()}</p>
+                <p className="mt-1">{user.workingStyle.charAt(0) + user.workingStyle.slice(1).toLowerCase().replace('_', ' ')}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Collaboration</h3>
-                <p className="mt-1">{user.collaborationPref.charAt(0) + user.collaborationPref.slice(1).toLowerCase()}</p>
+                <p className="mt-1">
+                  {user.collaborationPref === 'DOESNT_MATTER' 
+                    ? 'Doesn\'t Matter'
+                    : user.collaborationPref.charAt(0) + user.collaborationPref.slice(1).toLowerCase().replace('_', ' ')}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -202,14 +308,17 @@ export default function Profile() {
               <CardContent className="space-y-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Stage</h3>
-                  <Badge variant="outline" className="mt-1">{user.startupInfo.stage}</Badge>
+                  <Badge variant="outline" className="mt-1">{user.startupInfo.startupStage}</Badge>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Commitment</h3>
                   <Badge variant="outline" className="mt-1">
-                    {user.startupInfo.commitment.split('_').map(word => 
-                      word.charAt(0) + word.slice(1).toLowerCase()
-                    ).join(' ')}
+                      {user.startupInfo && user.startupInfo.startupCommitment ? 
+                      user.startupInfo.startupCommitment.split('_').map(word => 
+                        word.charAt(0) + word.slice(1).toLowerCase()
+                      ).join(' ')
+                      : 'Not specified'
+                    }
                   </Badge>
                 </div>
                 <div>
