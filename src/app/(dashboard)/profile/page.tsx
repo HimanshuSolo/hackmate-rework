@@ -41,6 +41,7 @@ type ContactInfo = {
 type User = {
   id: string
   name: string
+  description :string
   avatarUrl?: string
   location: string
   personalityTags: string[]
@@ -53,9 +54,9 @@ type User = {
   rolesOpenTo?: string[]
   pastProjects?: Project[]
   startupInfo?: {
-    stage: 'IDEA' | 'MVP' | 'SCALING' | 'EXITED'
-    goals: string
-    commitment: 'EXPLORING' | 'BUILDING' | 'LAUNCHING' | 'FULL_TIME_READY'
+    startupStage: 'IDEA' | 'MVP' | 'SCALING' | 'EXITED'
+    startupGoals: string
+    startupCommitment: 'EXPLORING' | 'BUILDING' | 'LAUNCHING' | 'FULL_TIME_READY'
     lookingFor: string[]
   }
   contactInfo?: ContactInfo
@@ -132,7 +133,7 @@ export default function Profile() {
             <CardTitle className="text-center">Profile Not Found</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-center">You haven't completed your profile yet.</p>
+            <p className="text-center">You have not completed your profile yet.</p>
             <div className="flex justify-center mt-4">
               <Button onClick={() => router.push('/onboarding')}>
                 Complete Your Profile

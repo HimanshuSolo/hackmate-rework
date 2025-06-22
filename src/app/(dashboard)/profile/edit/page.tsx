@@ -448,7 +448,7 @@ export default function ProfileEditForm() {
                       <SelectItem value="REMOTE">Remote</SelectItem>
                       <SelectItem value="HYBRID">Hybrid</SelectItem>
                       <SelectItem value="IN_PERSON">In Person</SelectItem>
-                      <SelectItem value="DOESNT_MATTER">Doesn't Matter</SelectItem>
+                      <SelectItem value="DOESNT_MATTER">Does not Matter</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

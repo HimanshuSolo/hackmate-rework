@@ -29,6 +29,7 @@
     "@tabler/icons-react": "^3.31.0",
     "@types/ngeohash": "^0.6.8",
     "axios": "^1.10.0",
+    "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",

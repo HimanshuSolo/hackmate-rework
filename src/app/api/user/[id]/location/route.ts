@@ -5,11 +5,11 @@ import prismaClient from '@/lib/prsimadb';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
-
 ) {
   try {
-    const { id } = params;
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/');
+    const id = pathParts[pathParts.indexOf('user') + 1];
     const auth = getAuth(req)
 
     // Check authentication
@@ -47,11 +47,11 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
-
 ) {
   try {
-    const { id } =  params;
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/');
+    const id = pathParts[pathParts.indexOf('user') + 1];
     const auth = getAuth(req)
 
     // Check authentication

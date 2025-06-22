@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { X, Plus } from "lucide-react"
-import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
 
 // Constants for file upload
@@ -240,7 +239,7 @@ export default function OnboardingForm() {
                 <FormControl>
                   <div className="flex items-center gap-4">
                     {value && (
-                      <Image
+                      <img
                         src={URL.createObjectURL(value[0])}
                         alt="Profile preview"
                         className="w-20 h-20 rounded-full object-cover"
