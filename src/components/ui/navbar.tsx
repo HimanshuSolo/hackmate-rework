@@ -19,12 +19,10 @@ import { useEffect, useState } from 'react'
 const navigation = [
   { name: 'Explore', href: '/explore' },
   { name: 'Profile', href: '/profile' },
-  { name: 'Admin', href: '/admin', requiresAdmin: true },
 ]
 
 export const Navbar = () => {
   const pathname = usePathname()
-  const isAdmin = true // Replace with your actual admin check
   const [scrolled, setScrolled] = useState(false)
 
   // Handle scroll effects
@@ -60,7 +58,6 @@ export const Navbar = () => {
           <div className="hidden sm:flex sm:items-center sm:space-x-6">
             <div className="flex space-x-6">
               {navigation.map((item) => {
-                if (item.requiresAdmin && !isAdmin) return null;
                 
                 return (
                   <Link
@@ -115,7 +112,6 @@ export const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px] mt-2">
                 {navigation.map((item) => {
-                  if (item.requiresAdmin && !isAdmin) return null;
                   
                   return (
                     <DropdownMenuItem key={item.name} asChild>
