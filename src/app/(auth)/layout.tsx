@@ -1,4 +1,4 @@
-import { AuthNavbar } from '@/components/ui/auth-navbar';
+import { Navbar } from '@/components/ui/navbar';
 import { type Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -11,13 +11,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-      <html lang="en">
-        <body>
-            <AuthNavbar/>
-          <main className="pt-16"> 
+    <> 
+      <Navbar showSignIn={false}/>
+      <div className='mt-16'>
         {children}
-      </main>
-        </body>
-      </html>
+      </div>
+    </>
   )
 }

@@ -20,6 +20,7 @@ import EmptyState from '../../../components/ui/empty-state'
 import NoMoreProfilesState from '../../../components/ui/no-more-profiles-state'
 import MatchDialog from '../../../components/ui/match-dialogue'
 import PaginationControls from '../../../components/ui/pagination-controls'
+import { toast } from 'sonner'
 
 
 export default function Explore() {
@@ -39,9 +40,18 @@ export default function Explore() {
       setIsLoadingUser(true);
       try {
         const response = await axios.get(`/api/user/${clerkUser.id}`);
+        console.log("CLERK "+clerkUser.id);
+        
         setCurrentUser(response.data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        if(error instanceof Error){
+          toast.error('Error while fetching user data');
+          console.error('Error while fetching user data:', error.message);
+        }
+        else{
+          toast.error('Error while fetching user data');
+          console.log('Error while fetching user data:', error);
+        }
       } finally {
         setIsLoadingUser(false);
       }
@@ -60,7 +70,6 @@ export default function Explore() {
   
   const {
     filters,
-    isLoadingPreferences,
     handleFilterChange
   } = useUserPreferences()
   
@@ -95,6 +104,7 @@ const handleStartOver = useCallback(async () => {
       refreshFilteredUsers()
     ]);
   } catch (error) {
+    toast.error('Error while starting over');
     console.error('Error starting over:', error);
   } finally {
     setIsRefreshingProfiles(false);
@@ -122,7 +132,7 @@ const handleStartOver = useCallback(async () => {
 
   // Render logic
   const renderMainContent = () => {
-    if (isLoadingUser || isLoadingPreferences || isLoadingProfiles || isRefreshingProfiles) {
+    if (isLoadingUser|| isLoadingProfiles || isRefreshingProfiles) {
       return <LoadingState />
     }
 
@@ -180,13 +190,12 @@ const handleStartOver = useCallback(async () => {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4">
+    <div className="container mx-auto my-auto lg:pt-6 px-4 space-y-3">
       {!isDesktop && (
         <MobileFilterSheet 
           open={filterOpen} 
           onOpenChange={setFilterOpen}
           filters={filters}
-          isLoadingPreferences={isLoadingPreferences}
           userCoordinates={userCoordinates}
           isSavingLocation={isSavingLocation}
           locationPermissionRequested={locationPermissionRequested}
@@ -203,7 +212,6 @@ const handleStartOver = useCallback(async () => {
         {isDesktop && (
           <FilterSidebar 
             filters={filters}
-            isLoadingPreferences={isLoadingPreferences}
             userCoordinates={userCoordinates}
             isSavingLocation={isSavingLocation}
             locationPermissionRequested={locationPermissionRequested}

@@ -22,7 +22,7 @@ export const AuthNavbar = () => {
   return (
     <nav 
       className={cn(
-        "fixed top-0 z-50 w-full h-16 transition-all duration-200",
+        "flex items-center fixed top-0 z-50 w-full h-18 transition-all duration-200",
         scrolled 
           ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm" 
           : "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
@@ -42,7 +42,6 @@ export const AuthNavbar = () => {
           <div className="flex items-center space-x-4">
             <ModeToggle />
             <UserButton 
-              afterSignOutUrl="/"
               appearance={{
                 elements: {
                   userButtonAvatarBox: "h-8 w-8 ring-2 ring-primary/20 hover:ring-primary/40 transition-all"

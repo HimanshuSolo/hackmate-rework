@@ -22,6 +22,7 @@ import { Edit, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useUser } from "@clerk/nextjs"
 import axios from 'axios'
+import { toast } from 'sonner'
 
 type Project = {
   id: string
@@ -88,6 +89,7 @@ export default function Profile() {
       setError(null);
     } catch (err) {
       console.error('Error fetching user data:', err);
+      toast.error('Error fetching user data');
       setError('Failed to load profile data');
     } finally {
       setLoading(false);
@@ -96,7 +98,7 @@ export default function Profile() {
 
   if (loading || !clerkLoaded) {
     return (
-      <div className="container mx-auto py-20 flex justify-center items-center">
+      <div className="container mx-2 py-20 flex justify-center items-center">
         <div className="text-center">
           <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-primary" />
           <p>Loading profile...</p>
@@ -107,14 +109,14 @@ export default function Profile() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-20">
+      <div className="container mx-2 py-20">
         <Card>
           <CardHeader>
             <CardTitle className="text-center text-red-500">Error</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-center">{error}</p>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 hover:cursor-pointer">
               <Button onClick={() => fetchUserData(clerkUser!.id)}>
                 Try Again
               </Button>
@@ -127,14 +129,14 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="container mx-auto py-20">
+      <div className="container mx-2 py-20">
         <Card>
           <CardHeader>
             <CardTitle className="text-center">Profile Not Found</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-center">You have not completed your profile yet.</p>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 hover:cursor-pointer">
               <Button onClick={() => router.push('/onboarding')}>
                 Complete Your Profile
               </Button>
@@ -146,13 +148,13 @@ export default function Profile() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container sm:mx-3 md:mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Profile</h1>
         <Button 
           onClick={() => router.push('/profile/edit')}
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:cursor-pointer"
         >
           <Edit className="h-4 w-4" />
           Edit Profile
@@ -347,7 +349,7 @@ export default function Profile() {
           </DialogHeader>
           {selectedProject?.link && (
             <div className="mt-4">
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className='hover:cursor-pointer'>
                 <a href={selectedProject.link} target="_blank" rel="noopener noreferrer">
                   View Project
                 </a>

@@ -5,7 +5,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
@@ -17,7 +16,6 @@ interface MobileFilterSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   filters: FilterOptions
-  isLoadingPreferences: boolean
   userCoordinates: { latitude: number; longitude: number; geohash: string } | null
   isSavingLocation: boolean
   locationPermissionRequested: boolean
@@ -29,7 +27,6 @@ export default function MobileFilterSheet({
   open,
   onOpenChange,
   filters,
-  isLoadingPreferences,
   userCoordinates,
   isSavingLocation,
   locationPermissionRequested,
@@ -39,23 +36,22 @@ export default function MobileFilterSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 mt-3 hover:cursor-pointer">
           <Filter className="h-4 w-4" />
           Filters
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[320px] sm:w-[480px] overflow-y-auto">
-        <SheetHeader className="mb-6">
+      <SheetContent side="right" className="w-[320px] sm:w-[480px] overflow-y-auto px-4">
+        <SheetHeader className="-ml-3">
           <SheetTitle>Filters</SheetTitle>
           <SheetDescription>
             Refine your matches based on preferences
           </SheetDescription>
         </SheetHeader>
         
-        <ScrollArea className="h-[calc(100vh-180px)]">
+        <ScrollArea className="px-1 sm:px-2">
           <FilterPanel 
             filters={filters}
-            isLoadingPreferences={isLoadingPreferences}
             userCoordinates={userCoordinates}
             isSavingLocation={isSavingLocation}
             locationPermissionRequested={locationPermissionRequested}
@@ -65,9 +61,11 @@ export default function MobileFilterSheet({
           />
         </ScrollArea>
         
-        <SheetFooter className="mt-4">
-          <Button onClick={() => onOpenChange(false)}>Apply Filters</Button>
-        </SheetFooter>
+        {/* <SheetFooter className="mt-4">
+          <Button onClick={() => onOpenChange(false)} className='hover:cursor-pointer'>
+            Apply Filters
+          </Button>
+        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   )

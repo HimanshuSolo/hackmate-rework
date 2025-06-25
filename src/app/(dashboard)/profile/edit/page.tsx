@@ -29,6 +29,9 @@ import {
 import { X, Plus, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
+import { toast } from "sonner"
+import { uploadOnCloudinary } from '@/lib/cloudinary';
+
 
 // Constants for file upload
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -68,7 +71,7 @@ const formSchema = z.object({
     stage: z.enum(['IDEA', 'MVP', 'SCALING', 'EXITED']),
     goals: z.string().min(50, "Please describe your startup goals in detail"),
     commitment: z.enum(['EXPLORING', 'BUILDING', 'LAUNCHING', 'FULL_TIME_READY']),
-    lookingFor: z.array(z.string()).min(1, "Select what you're looking for"),
+    lookingFor: z.array(z.string()).min(1, "Select what you're looking for").optional(),
   }).optional(),
   contactInfo: z.object({
     email: z.string().email("Please enter a valid email").optional(),
@@ -179,6 +182,7 @@ export default function ProfileEditForm() {
         setError(null);
       } catch (err) {
         console.error('Error fetching user data:', err);
+        toast.error('Error fetching user data');
         setError('Failed to load your profile data. Please try again.');
       } finally {
         setIsLoading(false);
@@ -188,7 +192,7 @@ export default function ProfileEditForm() {
     fetchUserData();
   }, [user?.id, form]);
 
-    async function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues) {
     if (!user?.id) return;
     
     setIsSubmitting(true);
@@ -196,10 +200,13 @@ export default function ProfileEditForm() {
     try {
       // Create FormData object for multipart/form-data submission
       const formData = new FormData();
+      let avatarUrl: string | undefined;
+
       
       // Add avatar file if it exists
       if (values.avatar?.[0]) {
-        formData.append('avatar', values.avatar[0]);
+          const uploadResult = await uploadOnCloudinary(values.avatar[0]);
+          avatarUrl = uploadResult.secure_url;
       }
       
       // Prepare the user data object
@@ -217,7 +224,8 @@ export default function ProfileEditForm() {
         skills: values.skills,
         pastProjects: values.pastProjects,
         startupInfo: values.startupInfo,
-        contactInfo: values.contactInfo
+        contactInfo: values.contactInfo,
+        avatarUrl: avatarUrl,
       };
       
       // Add the userData as a JSON string
@@ -231,6 +239,7 @@ export default function ProfileEditForm() {
       });
       
       console.log('Profile updated successfully:', response.data);
+      toast.success('Profile updated successfully');
       
       // Redirect to profile page
       router.push('/profile');
@@ -239,9 +248,9 @@ export default function ProfileEditForm() {
       console.error('Error updating profile:', error);
       if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to update profile';
-        alert(errorMessage);
+        toast.error(errorMessage);
       } else {
-        alert('An unexpected error occurred');
+        toast.error('An unexpected error occurred');
       }
     } finally {
       setIsSubmitting(false);
@@ -265,7 +274,11 @@ export default function ProfileEditForm() {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
           <p className="text-red-700 dark:text-red-400">{error}</p>
         </div>
-        <Button onClick={() => router.push('/profile')}>Return to Profile</Button>
+        <Button onClick={() => router.push('/profile')}
+                className="hover:cursor-pointer"  
+        >
+          Return to Profile
+        </Button>
       </div>
     );
   }
@@ -625,6 +638,7 @@ export default function ProfileEditForm() {
                 variant="outline"
                 size="sm"
                 onClick={() => append({ name: '', description: '', link: '' })}
+                className="hover:cursor-pointer"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Project
@@ -681,6 +695,7 @@ export default function ProfileEditForm() {
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(index)}
+                  className="hover:cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -757,7 +772,7 @@ export default function ProfileEditForm() {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="startupInfo.lookingFor"
               render={({ field }) => (
@@ -785,14 +800,14 @@ export default function ProfileEditForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
 
           <div className="flex space-x-4">
             <Button type="button" variant="outline" onClick={() => router.push('/profile')}>
               Cancel
             </Button>
-            <Button type="submit" className="flex-1" disabled={isSubmitting}>
+            <Button type="submit" className="flex-1 hover:cursor-pointer" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
 import axios from "axios" // Add axios import
-import { useState } from "react" // For loading state
+import { useEffect, useState } from "react" // For loading state
 import { useRouter } from "next/navigation" // For navigation after submission
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +29,9 @@ import {
 } from "@/components/ui/select"
 import { X, Plus } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
+import { toast } from "sonner"
+import { uploadOnCloudinary } from '@/lib/cloudinary';
+
 
 // Constants for file upload
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -38,10 +42,13 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   avatar: z
     .custom<FileList>()
-    .refine((files) => files?.length === 1, "Image is required")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, "Max file size is 5MB")
+    .refine((files) => !files || files.length === 0 || files.length === 1, "Only one image is allowed")
     .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      (files) => !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE,
+      "Max file size is 5MB"
+    )
+    .refine(
+      (files) => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0].type),
       "Only .jpg, .jpeg, .png and .webp formats are supported"
     )
     .optional(),
@@ -63,7 +70,7 @@ const formSchema = z.object({
     stage: z.enum(['IDEA', 'MVP', 'SCALING', 'EXITED']),
     goals: z.string().min(50, "Please describe your startup goals in detail"),
     commitment: z.enum(['EXPLORING', 'BUILDING', 'LAUNCHING', 'FULL_TIME_READY']),
-    lookingFor: z.array(z.string()).min(1, "Select what you're looking for"),
+    lookingFor: z.array(z.string()).min(1, "Select what you're looking for").optional(),
   }).optional(),
   contactInfo: z.object({
     email: z.string().email("Please enter a valid email").optional(),
@@ -95,8 +102,39 @@ const domainOptions = [
 
 export default function OnboardingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const {  user } = useUser();
+  const { user } = useUser();
+  const userId = user?.id;
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+
+
+
+   useEffect(() => {
+    // Check if user exists and has completed onboarding
+    if (userId) {
+      const checkUserProfile = async () => {
+        try {
+          const response = await axios.get(`/api/user/${userId}`);
+          // If user profile exists, redirect to explore page
+          if (response.data) {
+            router.push('/explore');
+          }
+        } catch (error) {
+          // If 404, it means profile doesn't exist yet, so stay on onboarding
+          // For other errors, we still allow onboarding to continue
+          console.log('User needs to complete onboarding');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      checkUserProfile();
+    } else {
+      setIsLoading(false);
+    }
+  }, [userId, router]);
+
+
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -128,18 +166,21 @@ export default function OnboardingForm() {
 
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true)
+
     
     try {
       // Create FormData object for multipart/form-data submission
       const formData = new FormData()
+      let avatarUrl: string | undefined;
+
       
       // Add avatar file if it exists
       if (values.avatar?.[0]) {
-        formData.append('avatar', values.avatar[0])
+          const uploadResult = await uploadOnCloudinary(values.avatar[0]);
+          avatarUrl = uploadResult.secure_url;
       }
       
-      // Generate a unique ID for the user
-      const userId = user?.id;
+
       
       // Prepare the user data object
       const userData = {
@@ -156,7 +197,8 @@ export default function OnboardingForm() {
         skills: values.skills,
         pastProjects: values.pastProjects,
         startupInfo: values.startupInfo,
-        contactInfo: values.contactInfo
+        contactInfo: values.contactInfo,
+        avatarUrl: avatarUrl,
       }
       
       // Add the userData as a JSON string
@@ -169,25 +211,38 @@ export default function OnboardingForm() {
         },
       })
       
-      console.log('Profile created successfully:', response.data)
+      console.log('Profile created: ', response.data)
       
       // Redirect to another page or show success message
+      toast.success('Profile created successfully')
       router.push('/explore') // Adjust the route as needed
       
     } catch (error) {
-      console.error('Error submitting form:', error)
+      if(error instanceof Error){
+        console.error('Error submitting form:', error.message);
+        toast.error('Error submitting form')
+      }
       // Handle error - show message to user
-      if (axios.isAxiosError(error)) {
+      else if (axios.isAxiosError(error)) {
         // Handle specific axios errors
         const errorMessage = error.response?.data?.message || 'Failed to create profile'
-        alert(errorMessage) // Consider using a toast or other UI component
+        console.log(errorMessage);
+        toast.error('An unexpected error occurred');
       } else {
-        alert('An unexpected error occurred')
+        console.log(error);
+        toast.error('An unexpected error occurred');
       }
     } finally {
       setIsSubmitting(false)
     }
   }
+
+    if (isLoading) {
+    return <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+    </div>;
+  }
+  
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-8">
@@ -463,7 +518,7 @@ export default function OnboardingForm() {
               name="contactInfo.email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="your@email.com" {...field} value={field.value || ''} />
                   </FormControl>
@@ -531,6 +586,7 @@ export default function OnboardingForm() {
                 variant="outline"
                 size="sm"
                 onClick={() => append({ name: '', description: '', link: '' })}
+                className="hover:cursor-pointer"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Project
@@ -587,6 +643,7 @@ export default function OnboardingForm() {
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(index)}
+                  className="hover:cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -663,7 +720,7 @@ export default function OnboardingForm() {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="startupInfo.lookingFor"
               render={({ field }) => (
@@ -691,10 +748,10 @@ export default function OnboardingForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full hover:cursor-pointer" disabled={isSubmitting}>
             {isSubmitting ? "Creating Profile..." : "Complete Profile"}
           </Button>
         </form>

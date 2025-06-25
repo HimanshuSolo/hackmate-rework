@@ -6,21 +6,18 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Slider } from "@/components/ui/slider"
-import { Switch } from '@/components/ui/switch'
-import { Loader2, MapPin } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { FilterOptions, WorkingStyle, CollaborationPref, StartupStage } from '../../types'
 import { 
   WORKING_STYLE_LABELS, 
   COLLABORATION_PREF_LABELS, 
   STARTUP_STAGE_LABELS, 
   DEFAULT_FILTERS,
-  DEFAULT_USER_PREFERENCES 
 } from '../../constants'
 import { fetchAvailableSkillsAndDomains } from '@/lib/filter-utils'
 
 interface FilterPanelProps {
   filters: FilterOptions
-  isLoadingPreferences: boolean
   userCoordinates: { latitude: number; longitude: number; geohash: string } | null
   isSavingLocation: boolean
   locationPermissionRequested: boolean
@@ -32,14 +29,8 @@ interface FilterPanelProps {
 
 export default function FilterPanel({
   filters,
-  isLoadingPreferences,
-  userCoordinates,
-  isSavingLocation,
-  locationPermissionRequested,
-  requestLocationPermission,
   handleFilterChange,
   onClose,
-  isDesktop = false
 }: FilterPanelProps) {
   // State for skills and domains
   const [allSkills, setAllSkills] = useState<string[]>([])
@@ -106,8 +97,8 @@ export default function FilterPanel({
   }
   
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="space-y-7">
+      {/* <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Switch 
             id="use-profile-prefs"
@@ -135,10 +126,10 @@ export default function FilterPanel({
           </Label>
         </div>
         {isLoadingPreferences && <Loader2 className="h-4 w-4 animate-spin" />}
-      </div>
+      </div> */}
       
       {/* Location Filter */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">Location</h3>
           <div className="flex items-center space-x-2">
@@ -189,7 +180,7 @@ export default function FilterPanel({
             </div>
           </div>
         )}
-      </div>
+      </div> */}
       
       {/* Experience Range */}
       <div className="space-y-4">
@@ -308,18 +299,23 @@ export default function FilterPanel({
         </div>
       </div>
       
-      <div className="flex justify-between pt-4">
+      <div className="flex items-center justify-between [&>*]:hover:cursor-pointer">
         <Button 
           variant="outline" 
           onClick={() => {
             handleFilterChange(DEFAULT_FILTERS)
           }}
+          className="hover:cursor-pointer"
         >
           Reset Filters
         </Button>
-        {!isDesktop && onClose && (
-          <Button onClick={onClose}>Apply Filters</Button>
-        )}
+        {/* {!isDesktop && onClose && ( */}
+          <Button onClick={onClose}
+                  className="hover:cursor-pointer"
+          >
+            Apply Filters
+          </Button>
+        {/* )} */}
       </div>
     </div>
   )
