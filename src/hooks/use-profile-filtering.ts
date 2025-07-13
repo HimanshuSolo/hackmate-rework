@@ -322,7 +322,7 @@ export function useProfileFiltering(filters: FilterOptions) {
   useEffect(() => {
     if (!filteredUsers[currentIndex]?.id || !clerkUser?.id) return;
     
-    // Only mark as viewed if user spends at least 5 seconds on a profile
+    // Only mark as viewed if user spends at least 1 minute on a profile
     const timer = setTimeout(() => {
       markProfileViewed(filteredUsers[currentIndex].id);
     }, 60000);
