@@ -16,9 +16,9 @@ await redisClient.connect();
 // Default TTL values (in seconds)
 const DEFAULT_TTL = {
   USER_PROFILE: 3600, // 1 hour
-  VIEWED_PROFILES: 2592000, // 30 days
-  LIKES: 2592000, // 30 days
-  MATCHES: 2592000 // 30 days
+  VIEWED_PROFILES: 3600, // 1 hour
+  LIKES: 3600, // 1 hour
+  MATCHES: 3600 // 1 hour
 };
 
 // User likes functions
