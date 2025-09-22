@@ -5,6 +5,8 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/components/theme-provider'
 import { dark } from '@clerk/themes';
 import { Toaster } from 'sonner'
+import { Analytics } from '@vercel/analytics/next';
+
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -49,6 +51,7 @@ export default function RootLayout({
 
             <div className='mt-11 md:mt-2'>
               {children}
+              <Analytics/>
             </div>
           </ThemeProvider>
         </body>
