@@ -48,9 +48,9 @@ export function useLocationServices(userId?: string) {
             
             setLocationPermissionRequested(true);
             
-            toast("Using saved location", {
-              description: `Your previously saved location (${locationData.geohash.substring(0, 5)}...) will be used for matching.`
-            });
+            // toast("Using saved location", {
+            //   description: `Your previously saved location (${locationData.geohash.substring(0, 5)}...) will be used for matching.`
+            // });
           }
         }
       } catch (error) {

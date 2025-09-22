@@ -169,24 +169,6 @@ const handleStartOver = useCallback(async () => {
           handlePass={handlePass}
           isMatch={matches.includes(filteredUsers[currentIndex].id)}
         />
-        
-        {/* <PaginationControls 
-          currentIndex={currentIndex}
-          totalCount={filteredUsers.length}
-          onPrevious={() => {
-            setCurrentIndex(Math.max(0, currentIndex - 1))
-            x.set(0)
-          }}
-          onNext={() => {
-            if (currentIndex < filteredUsers.length - 1) {
-              setCurrentIndex(currentIndex + 1)
-            } else {
-              // If we're on the last card and click next, show empty state
-              setCurrentIndex(filteredUsers.length)
-            }
-            x.set(0)
-          }}
-        /> */}
       </>
     )
   }
