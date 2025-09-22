@@ -538,18 +538,6 @@ export async function POST(request: Request) {
         // Return the created user
         return createdUser;
       });
-
-      // Cache the new user in Redis
-      await cacheUserProfile(user);
-      
-      // Invalidate any related user list caches (both per-page and full set caches)
-      const cachePatterns = ['users:*', 'users:fullset:*'];
-      for (const pattern of cachePatterns) {
-        const keys = await redisClient.keys(pattern);
-        if (keys.length > 0) {
-          await redisClient.del(keys);
-        }
-      }
       
       return NextResponse.json(user, { status: 201 });
     } catch (dbError) {
