@@ -7,11 +7,7 @@ import { z } from 'zod';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { 
   getViewedProfiles,
-  cacheUserProfile,
   getCachedUserProfile,
-  setValue,
-  getValue,
-  redisClient
 } from '@/lib/redis';
 
 // Define the request body schema for user creation
@@ -131,310 +127,177 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 // GET handler for filtering and matching users
 export async function GET(req: NextRequest) {
   try {
-    // Extract URL parameters
     const searchParams = req.nextUrl.searchParams;
     const params = Object.fromEntries(searchParams.entries());
-    
-    // Add caching headers for browser and CDN caching
-    const headers = new Headers();
-    headers.set('Cache-Control', 'public, max-age=60, s-maxage=120'); // Cache for 1 minute browser, 2 minutes CDN
-    headers.set('Vary', 'Accept, Cookie, X-User-ID'); // Vary cache by these headers
-    
-    // Validate filters
+
     const validatedFilters = filterSchema.parse(params);
-    
-    // Create a cache key based on filter parameters WITHOUT pagination
-    // This allows us to reuse the same cached results for different pages
-    const filterParams = { ...validatedFilters };
-    delete filterParams.page; // Remove page for caching full result set
-    delete filterParams.pageSize; // Remove page size for caching full result set
-    
-    const cacheKey = `users:fullset:${JSON.stringify(filterParams)}`;
-    
-    // Try to get full result set from Redis cache first
-    const cachedFullResults = await getValue(cacheKey);
-    
-    if (cachedFullResults) {
-      console.log('Cache hit: Returning cached user results');
-      
-      // Parse the full cached results
-      const fullResults = JSON.parse(cachedFullResults);
-      
-      // Calculate pagination for the requested page
-      const startIndex = (validatedFilters.page - 1) * validatedFilters.pageSize;
-      const endIndex = startIndex + validatedFilters.pageSize;
-      
-      // Slice the cached results to get the requested page
-      const pagedUsers = fullResults.users.slice(startIndex, endIndex);
-      
-      // Return the paginated results from cache
-      const responseData = {
-        users: pagedUsers,
-        pagination: {
-          page: validatedFilters.page,
-          pageSize: validatedFilters.pageSize,
-          totalCount: fullResults.pagination.totalCount,
-          totalPages: Math.ceil(fullResults.pagination.totalCount / validatedFilters.pageSize)
-        }
-      };
-      
-      return NextResponse.json(responseData, { headers });
-    }
-    
-    console.log('Cache miss: Fetching users from database');
-    
-    // Get the user's viewed profiles from the database
+
+    const headers = new Headers();
+    headers.set('Cache-Control', 'public, max-age=60, s-maxage=120');
+
+    // Step 1: Prepare excludeIds
     let viewedProfiles: string[] = [];
     if (validatedFilters.excludeViewed) {
-      // First try to get from Redis (faster)
-      const redisViewedProfiles = await getViewedProfiles(validatedFilters.userId);
-      
-      // If Redis doesn't have the data, fetch from the database
-      if (redisViewedProfiles.length === 0) {
+      viewedProfiles = await getViewedProfiles(validatedFilters.userId);
+      if (viewedProfiles.length === 0) {
         const views = await prismaClient.view.findMany({
-          where: {
-            userAId: validatedFilters.userId
-          },
-          select: {
-            userBId: true
-          }
+          where: { userAId: validatedFilters.userId },
+          select: { userBId: true },
         });
-        viewedProfiles = views.map(view => view.userBId);
-      } else {
-        viewedProfiles = redisViewedProfiles;
+        viewedProfiles = views.map(v => v.userBId);
       }
     }
-    
-    // Combine all IDs to exclude
+
     const excludeIds = [
-      ...viewedProfiles, 
       validatedFilters.userId,
-      ...(validatedFilters.excludeUserIds || [])
+      ...(validatedFilters.excludeUserIds || []),
+      ...viewedProfiles,
     ];
-    
-    // Log for debugging
-    console.log(`Excluding ${excludeIds.length} users: ${excludeIds.join(', ')}`);
-    
-    // Build the base query with proper structure for your schema
-    const query: any = {
-      where: {
-        id: {
-          notIn: excludeIds,
-        },
-      },
-      include: {
-        contactInfo: true,
-        pastProjects: true,
-        startupInfo: true,
-      },
-      // No pagination parameters here to get the full dataset
+
+    // Step 2: Build Prisma filters
+    const where: any = {
+      id: { notIn: excludeIds },
     };
-    
-    // Apply skill filters if provided
+
     if (validatedFilters.skills.length > 0) {
-      query.where.skills = {
-        hasSome: validatedFilters.skills,
-      };
+      where.skills = { hasSome: validatedFilters.skills };
     }
-    
-    // Apply domain expertise filters if provided
     if (validatedFilters.domains.length > 0) {
-      query.where.domainExpertise = {
-        hasSome: validatedFilters.domains,
-      };
+      where.domainExpertise = { hasSome: validatedFilters.domains };
     }
-    
-    // Apply working style filters if provided
     if (validatedFilters.workingStyles.length > 0) {
-      query.where.workingStyle = {
-        in: validatedFilters.workingStyles,
-      };
+      where.workingStyle = { in: validatedFilters.workingStyles };
     }
-    
-    // Apply collaboration preference filters if provided
     if (validatedFilters.collaborationPrefs.length > 0) {
-      query.where.collaborationPref = {
-        in: validatedFilters.collaborationPrefs,
-      };
+      where.collaborationPref = { in: validatedFilters.collaborationPrefs };
     }
-    
-    // Apply experience range filter
-    query.where.yearsExperience = {
+    if (validatedFilters.startupStages.length > 0) {
+      where.startupInfo = { startupStage: { in: validatedFilters.startupStages } };
+    }
+    where.yearsExperience = {
       gte: validatedFilters.experienceMin,
       lte: validatedFilters.experienceMax,
     };
-    
-    // Apply startup stage filters if provided
-    if (validatedFilters.startupStages.length > 0) {
-      query.where.startupInfo = {
-        startupStage: {
-          in: validatedFilters.startupStages,
-        },
+
+    // Step 3: DB-level pagination
+    const page = validatedFilters.page || 1;
+    const pageSize = validatedFilters.pageSize || 20;
+    const skip = (page - 1) * pageSize;
+
+    const [totalCount, users] = await prismaClient.$transaction([
+      prismaClient.user.count({ where }),
+      prismaClient.user.findMany({
+        where,
+        include: { contactInfo: true, pastProjects: true, startupInfo: true },
+        skip,
+        take: pageSize,
+      }),
+    ]);
+
+    // Step 4: Fetch current user profile fields for similarity
+  let currentUserProfile: any = {};
+  if (validatedFilters.skills.length > 0) {
+    const cachedCurrentUser = await getCachedUserProfile(validatedFilters.userId);
+    if (cachedCurrentUser) {
+      currentUserProfile = {
+        skills: JSON.parse(cachedCurrentUser.skills || '[]'),
+        domainExpertise: JSON.parse(cachedCurrentUser.domainExpertise || '[]'),
+        personalityTags: JSON.parse(cachedCurrentUser.personalityTags || '[]'),
+        workingStyle: cachedCurrentUser.workingStyle ? [cachedCurrentUser.workingStyle] : [],
+        collaborationPref: cachedCurrentUser.collaborationPref ? [cachedCurrentUser.collaborationPref] : [],
       };
-    }
-    
-    // Execute the query to get ALL matching users (without pagination)
-    const allUsers = await prismaClient.user.findMany(query);
-    
-    // Cache individual user profiles in Redis
-    for (const user of allUsers) {
-      await cacheUserProfile(user);
-    }
-    
-    // Get current user's skills for similarity calculation if needed
-    let currentUserSkills: string[] = [];
-    if (validatedFilters.skills.length > 0) {
-      // Try to get current user from Redis first
-      const cachedCurrentUser = await getCachedUserProfile(validatedFilters.userId);
-      
-      if (cachedCurrentUser && cachedCurrentUser.skills) {
-        try {
-          currentUserSkills = JSON.parse(cachedCurrentUser.skills);
-        } catch (e) {
-          console.error('Error parsing cached skills:', e);
-        }
-      }
-      
-      // Fall back to database if not in cache
-      if (currentUserSkills.length === 0) {
-        const currentUser = await prismaClient.user.findUnique({
-          where: { id: validatedFilters.userId },
-          select: { skills: true }
-        });
-        
-        if (currentUser) {
-          currentUserSkills = currentUser.skills;
-          // Update cache for future requests
-          if (cachedCurrentUser) {
-            await redisClient.hSet(`user:${validatedFilters.userId}`, 'skills', JSON.stringify(currentUserSkills));
-          }
-        }
-      }
-    }
-    
-    // Process users with additional filters and scoring
-    let processedUsers = [...allUsers];
-    
-    // Apply location-based filtering if enabled and coordinates are provided
-    if (validatedFilters.enableLocationBasedMatching && 
-        validatedFilters.latitude && 
-        validatedFilters.longitude) {
-      
-      // Filter based on your schema's structure for location
-      processedUsers = processedUsers.filter(user => {
-        // Skip users without location data (adjust field names as needed)
-        const userLat = user.latitude || 0;
-        const userLon = user.longitude || 0;
-        
-        if (userLat === 0 || userLon === 0) return false;
-        
-        const distance = calculateDistance(
-          validatedFilters.latitude!,
-          validatedFilters.longitude!,
-          userLat,
-          userLon
-        );
-        
-        // Add distance property
-        (user as any).distance = Math.round(distance);
-        
-        // Filter by max distance
-        return distance <= validatedFilters.maxDistance;
+    } else {
+      const currentUser = await prismaClient.user.findUnique({
+        where: { id: validatedFilters.userId },
+        select: { skills: true, domainExpertise: true, personalityTags: true, workingStyle: true, collaborationPref: true },
       });
-    }
-    
-    // Calculate similarity scores if we have current user skills
-    if (currentUserSkills.length > 0) {
-      processedUsers = processedUsers.map(user => {
-        const similarityScore = calculateCosineSimilarity(
-          currentUserSkills,
-          user.skills
-        );
-        
-        return {
-          ...user,
-          similarityScore: Math.round(similarityScore * 100) / 100
+      if (currentUser) {
+        currentUserProfile = {
+          skills: currentUser.skills,
+          domainExpertise: currentUser.domainExpertise,
+          personalityTags: currentUser.personalityTags,
+          workingStyle: currentUser.workingStyle ? [currentUser.workingStyle] : [],
+          collaborationPref: currentUser.collaborationPref ? [currentUser.collaborationPref] : [],
         };
-      });
-      
-      // Sort by similarity score (descending)
-      processedUsers.sort((a, b) => {
-        return (b as any).similarityScore - (a as any).similarityScore;
-      });
+      }
     }
-    
-    // Format the response
-    const formattedUsers = processedUsers.map(user => {
+  }
+
+    // Step 5: Optional in-memory scoring and location filtering
+    let processedUsers = users;
+
+    if (validatedFilters.enableLocationBasedMatching && validatedFilters.latitude && validatedFilters.longitude) {
+    processedUsers = processedUsers.filter(u => {
+      if (!u.latitude || !u.longitude) return false;
+      const distance = calculateDistance(validatedFilters.latitude, validatedFilters.longitude, u.latitude, u.longitude);
+      (u as any).distance = Math.round(distance);
+      return distance <= validatedFilters.maxDistance;
+    });
+  }
+
+    if (currentUserProfile.skills && currentUserProfile.domainExpertise && currentUserProfile.personalityTags) {
+    processedUsers = processedUsers.map(u => {
+      const userVector = [
+        ...(u.skills || []),
+        ...(u.domainExpertise || []),
+        ...(u.personalityTags || []),
+        ...(u.workingStyle ? [u.workingStyle] : []),
+        ...(u.collaborationPref ? [u.collaborationPref] : []),
+      ];
+      const currentUserVector = [
+        ...(currentUserProfile.skills || []),
+        ...(currentUserProfile.domainExpertise || []),
+        ...(currentUserProfile.personalityTags || []),
+        ...(currentUserProfile.workingStyle || []),
+        ...(currentUserProfile.collaborationPref || []),
+      ];
       return {
-        id: user.id,
-        name: user.name,
-        avatarUrl: user.avatarUrl,
-        location: user.location || null,
-        description: user.description,
-        personalityTags: user.personalityTags,
-        workingStyle: user.workingStyle,
-        collaborationPref: user.collaborationPref,
-        currentRole: user.currentRole,
-        yearsExperience: user.yearsExperience,
-        domainExpertise: user.domainExpertise,
-        skills: user.skills,
-        similarityScore: (user as any).similarityScore,
-        distance: (user as any).distance,
-        pastProjects: user.pastProjects,
-        startupInfo: user.startupInfo,
-        calendarLink: user.contactInfo?.scheduleUrl,
-        email: user.contactInfo?.email,
-        socialLinks: [
-          user.contactInfo?.linkedinUrl ? { platform: 'LinkedIn', url: user.contactInfo.linkedinUrl } : null,
-          user.contactInfo?.twitterUrl ? { platform: 'Twitter', url: user.contactInfo.twitterUrl } : null
-        ].filter(Boolean)
+        ...u,
+        similarityScore: Math.round(calculateCosineSimilarity(currentUserVector, userVector) * 100) / 100,
       };
     });
-    
-    // Create the full result set for caching
-    const fullResultSet = {
+    processedUsers.sort((a, b) => (b as any).similarityScore - (a as any).similarityScore);
+  }
+
+    // Step 6: Format response
+    const formattedUsers = processedUsers.map(u => ({
+      id: u.id,
+      name: u.name,
+      avatarUrl: u.avatarUrl,
+      location: u.location || null,
+      description: u.description,
+      personalityTags: u.personalityTags,
+      workingStyle: u.workingStyle,
+      collaborationPref: u.collaborationPref,
+      currentRole: u.currentRole,
+      yearsExperience: u.yearsExperience,
+      domainExpertise: u.domainExpertise,
+      skills: u.skills,
+      similarityScore: (u as any).similarityScore,
+      distance: (u as any).distance,
+      pastProjects: u.pastProjects,
+      startupInfo: u.startupInfo,
+      calendarLink: u.contactInfo?.scheduleUrl,
+      email: u.contactInfo?.email,
+      socialLinks: [
+        u.contactInfo?.linkedinUrl ? { platform: 'LinkedIn', url: u.contactInfo.linkedinUrl } : null,
+        u.contactInfo?.twitterUrl ? { platform: 'Twitter', url: u.contactInfo.twitterUrl } : null,
+      ].filter(Boolean),
+    }));
+
+    return NextResponse.json({
       users: formattedUsers,
       pagination: {
-        totalCount: formattedUsers.length
-      }
-    };
-    
-    // Cache the FULL result set in Redis with 60-second TTL
-    await setValue(cacheKey, JSON.stringify(fullResultSet), 60);
-    
-    // Now paginate for the current request
-    const startIndex = (validatedFilters.page - 1) * validatedFilters.pageSize;
-    const endIndex = startIndex + validatedFilters.pageSize;
-    const pagedUsers = formattedUsers.slice(startIndex, endIndex);
-    
-    // Create the paginated response
-    const responseData = {
-      users: pagedUsers,
-      pagination: {
-        page: validatedFilters.page,
-        pageSize: validatedFilters.pageSize,
-        totalCount: formattedUsers.length,
-        totalPages: Math.ceil(formattedUsers.length / validatedFilters.pageSize)
-      }
-    };
-    
-    // Return response with caching headers
-    return NextResponse.json(responseData, { headers });
-    
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid filter parameters', details: error.errors }, 
-        { status: 400 }
-      );
-    }
-    
-    return NextResponse.json(
-      { error: 'Failed to fetch users', message: (error as Error).message }, 
-      { status: 500 }
-    );
+        page,
+        pageSize,
+        totalCount,
+        totalPages: Math.ceil(totalCount / pageSize),
+      },
+    }, { headers });
+
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 }
 

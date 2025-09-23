@@ -4,7 +4,7 @@ import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { ModeToggle } from './toggle-button'
-import { ChevronDown, Menu, Sparkles, UserRoundPen, UserSearch } from 'lucide-react'
+import { ChevronDown, Menu, UserRoundPen, UserSearch, Zap } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,11 +39,10 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                HackMate
-              </span>
+            <Link href="/" className="flex items-center ">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+                <Zap className="h-5 w-5 text-white" />
+              </div>
             </Link>
           </div>
           
