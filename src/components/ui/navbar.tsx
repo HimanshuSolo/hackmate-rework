@@ -4,7 +4,7 @@ import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { ModeToggle } from './toggle-button'
-import { ChevronDown, Menu, Sparkles, UserRoundPen, UserSearch, Zap } from 'lucide-react'
+import { ChevronDown, Menu, UserRoundPen, UserSearch, Zap } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
