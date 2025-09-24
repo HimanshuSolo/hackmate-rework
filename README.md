@@ -102,12 +102,3 @@ Hackmate is still in its early indie stage. PRs, ideas, and collaborators are we
 ## 📜 License
 
 MIT License — feel free to fork and build your own version.
-
-
-
-Let me know if you'd like to include:
-- An architectural diagram
-- Swagger/OpenAPI documentation
-- or a deploy button for one-click setup on Railway/Vercel
-
-I can also tailor this for a `monorepo` if your backend/frontend are in one project.
