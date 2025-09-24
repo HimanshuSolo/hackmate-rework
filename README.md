@@ -75,7 +75,7 @@ Other matching logic, such as filtering, exclusions, and scoring, is handled thr
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/hackmate.git
+git clone https://github.com/dfordp/hackmate-rework.git
 cd hackmate
 ```
 
