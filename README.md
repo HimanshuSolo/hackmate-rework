@@ -1,7 +1,8 @@
 # Hackmate
 
-[![Hackmate on Peerlist](https://peerlist.io/badge.svg)](https://peerlist.io/dfordp/project/hackmate)
-[![Hackmate on Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=XXXX\&theme=light)](https://www.producthunt.com/products/hackmate?launch=hackmate)
+[![Hackmate on Peerlist](https://peerlist-readme-badge.herokuapp.com/api/hackmate)](https://peerlist.io/dfordp/project/hackmate)  
+[![Hackmate on Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1018821&theme=light)](https://www.producthunt.com/products/hackmate?utm_source=badge-featured&utm_medium=badge&utm_source=badge-hackmate)
+
 
 **Live project:** [hackmate.app](https://hackmate.app/)
 
