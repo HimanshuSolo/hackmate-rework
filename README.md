@@ -1,6 +1,6 @@
 # Hackmate
 
-[![Hackmate on Peerlist](https://peerlist-readme-badge.herokuapp.com/api/hackmate)](https://peerlist.io/dfordp/project/hackmate)  
+[![Hackmate on Peerlist](https://peerlist.io/api/v1/projects/embed/PRJHJKNR7KLEGQGOG1AQJJMBRREMRN?showUpvote=false&theme=light)](https://peerlist.io/dfordp/project/hackmate)
 [![Hackmate on Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1018821&theme=light)](https://www.producthunt.com/products/hackmate?utm_source=badge-featured&utm_medium=badge&utm_source=badge-hackmate)
 
 
