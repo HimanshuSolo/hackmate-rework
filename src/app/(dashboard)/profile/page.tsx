@@ -80,21 +80,26 @@ export default function Profile() {
       router.push('/sign-in');
     }
   }, [clerkLoaded, isSignedIn, clerkUser, router]);
-
-  const fetchUserData = async (userId: string) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`/api/user/${userId}`);
-      setUser(response.data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching user data:', err);
-      toast.error('Error fetching user data');
-      setError('Failed to load profile data');
-    } finally {
-      setLoading(false);
-    }
-  };
+    
+  const fetchUserData = async (userId: string )=> {
+      setLoading(true);
+      try {
+        const response = await axios.get(`/api/user/${userId}`);
+        setUser(response.data);
+        setError(null);
+      } catch (err) {
+        // Example: check for 404 to redirect
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          router.push('/onboarding');
+        } else {
+          toast.error('Error fetching user data');
+          setError('Failed to load profile data');
+        }
+        console.error('Error fetching user data:', err);
+      } finally { 
+        setLoading(false);
+      }
+    };
 
   if (loading || !clerkLoaded) {
     return (

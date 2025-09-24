@@ -1,82 +1,103 @@
+# Hackmate
 
-# 🚀 Hackmate
+[![Hackmate on Peerlist](https://peerlist.io/api/v1/projects/embed/PRJHJKNR7KLEGQGOG1AQJJMBRREMRN?showUpvote=false&theme=light)](https://peerlist.io/dfordp/project/hackmate)
+[![Hackmate on Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1018821&theme=light)](https://www.producthunt.com/products/hackmate?utm_source=badge-featured&utm_medium=badge&utm_source=badge-hackmate)
 
-**Hackmate** is a swipe-based matchmaking platform designed to help founders and builders discover potential co-founders, collaborators, or indie hackers to work with — Tinder-style.
 
-No social profiles, no fluff. Just raw experience, aligned intent, and mutual interest.
-
----
-
-## 🧠 What is Hackmate?
-
-A real-time matchmaking app where users:
-
-- Create a profile with their skillset, experience, and goals
-- Swipe right to express interest in working with someone
-- Get matched if there's a mutual right swipe
-- View new matches in a dynamic queue
-
-Hackmate is built for fast, low-friction connections in startup ecosystems, hackathons, and builder communities.
+**Live project:** [hackmate.app](https://hackmate.app/)
 
 ---
 
-## 💡 Key Features
+## Overview
 
-- 🃏 **Swipe-based interface** – Discover people by swiping right or left
-- ⚡️ **Real-time match queue** – Get notified instantly when you match
-- 🔒 **No social pressure** – No likes shown unless it's mutual
-- 🧰 **Skill-first profiles** – Show what you’ve built, not just where you studied
-- 🧠 **Cache-accelerated backend** – Uses Redis for real-time interactions
+Hackmate is a swipe-based matchmaking platform designed for founders and builders to meet potential co-founders, collaborators, and indie hackers.
 
----
+Instead of social media profiles and endless bios, Hackmate focuses on skills, intent, and mutual interest. Users create lightweight profiles, swipe to express interest, and get matched in real time if there is mutual alignment.
 
-## ⚙️ Tech Stack
-
-### 🖥 Frontend
-- Next.js 
-- Tailwind CSS for rapid UI styling
-
-### 🛠 Backend
-- Redis for real-time caching
-- PostgreSQL 
-
-### ☁️ Infrastructure
-- Redis 
-- Vercel 
+The app was built to make collaboration faster and more intentional for startup ecosystems, hackathons, and builder communities.
 
 ---
 
-## 🧱 Redis Store Structure
+## How It Works
 
-| Key Purpose       | Redis Type | Key Format          | Example Usage            |
-|-------------------|------------|----------------------|---------------------------|
-| Likes Given       | `SET`      | `likes:<user_id>`    | Prevent duplicate swipes |
-| Match Queue       | `LIST`     | `matches:<user_id>`  | Fetch mutual matches     |
-| User Profiles     | `HASH`     | `user:<user_id>`     | Cached basic user info   |
+1. Users create a profile with their skills, experience, and goals.
+2. The app shows other profiles that can be swiped right (interested) or left (skip).
+3. When two users swipe right on each other, they instantly appear in a shared match queue.
+4. Matched users can view details and connect immediately.
 
-> Compatibility scores and seen/blocked users are handled through API logic, not Redis.
+This approach removes friction from networking by focusing only on aligned intent and relevant skills.
 
 ---
 
-## 📦 Local Setup
+## Key Features
+
+* **Swipe-based discovery**: Browse and evaluate potential collaborators quickly.
+* **Real-time matches**: Matches appear instantly through a Redis-backed caching layer.
+* **Mutual-only visibility**: Users only see interest if it is reciprocated, reducing pressure.
+* **Skill-focused profiles**: Profiles highlight what users can do and what they have built.
+* **Low-latency infrastructure**: Redis and WebSockets ensure fast responses for swipes and matches.
+
+---
+
+## Technology Stack
+
+**Frontend**
+
+* Next.js for the web application
+* Tailwind CSS for styling
+
+**Backend**
+
+* PostgreSQL for structured data
+* Redis for real-time caching and match detection
+
+**Infrastructure**
+
+* Vercel for hosting
+* Redis running locally via Docker or in the cloud (Upstash, Aiven, etc.)
+
+---
+
+## Redis Store Design
+
+| Purpose       | Type | Key Format          | Example                          |
+| ------------- | ---- | ------------------- | -------------------------------- |
+| Likes Given   | SET  | `likes:<user_id>`   | Used to prevent duplicate swipes |
+| Match Queue   | LIST | `matches:<user_id>` | Stores mutual matches            |
+| User Profiles | HASH | `user:<user_id>`    | Caches basic profile information |
+
+Other matching logic, such as filtering, exclusions, and scoring, is handled through the backend services.
+
+---
+
+## Local Development Setup
+
+Clone the repository:
 
 ```bash
-# Clone the repo
 git clone https://github.com/your-username/hackmate.git
 cd hackmate
+```
 
-# Install dependencies
+Install dependencies:
+
+```bash
 npm install
+```
 
-# Setup Redis (using Docker or cloud URL)
+Run Redis locally or connect to a cloud provider:
+
+```bash
 docker run -p 6379:6379 redis
-# OR use Aiven/Upstash and set REDIS_URL
+```
 
-# Start the dev server
+Start the development server:
+
+```bash
 npm run dev
-````
+```
 
-> Make sure you set environment variables:
+Environment configuration:
 
 ```env
 REDIS_URL=redis://localhost:6379
@@ -84,30 +105,23 @@ REDIS_URL=redis://localhost:6379
 
 ---
 
-## 🧠 Future Plans
+## Future Development
 
-* 🎯 Interest-based filtering (builder vs designer vs product)
-* 🌐 Geo/Timezone-based matching
-* 🛠 Project pitch cards and mini portfolios
-* 🤖 AI-based match suggestions
+Planned features include:
+
+* Role and interest-based filtering (e.g., designer, product, engineering)
+* Matching based on timezone and geography
+* Project pitch cards and lightweight portfolios
+* Improved match feed and conversation prompts
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Hackmate is still in its early indie stage. PRs, ideas, and collaborators are welcome. Create an issue or reach out directly.
+Hackmate began as a side project to test whether swipe-style discovery could improve collaboration in builder communities. Contributions, ideas, and feedback are welcome. Open an issue, create a pull request, or reach out directly.
 
+---
 
+## License
 
-## 📜 License
-
-MIT License — feel free to fork and build your own version.
-
-
-
-Let me know if you'd like to include:
-- An architectural diagram
-- Swagger/OpenAPI documentation
-- or a deploy button for one-click setup on Railway/Vercel
-
-I can also tailor this for a `monorepo` if your backend/frontend are in one project.
+MIT License. Hackmate is open for experimentation, forking, and extension.

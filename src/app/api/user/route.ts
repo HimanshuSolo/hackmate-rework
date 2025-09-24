@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import prismaClient from '@/lib/prsimadb';
 import { z } from 'zod';
@@ -110,19 +107,19 @@ function calculateCosineSimilarity(array1: string[], array2: string[]): number {
 }
 
 // Helper function to calculate distance between two coordinates using Haversine formula
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Earth's radius in km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+// function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+//   const R = 6371; // Earth's radius in km
+//   const dLat = (lat2 - lat1) * Math.PI / 180;
+//   const dLon = (lon2 - lon1) * Math.PI / 180;
   
-  const a = 
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+//   const a = 
+//     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+//     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in km
-}
+//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//   return R * c; // Distance in km
+// }
 
 // GET handler for filtering and matching users
 export async function GET(req: NextRequest) {
@@ -155,6 +152,7 @@ export async function GET(req: NextRequest) {
     ];
 
     // Step 2: Build Prisma filters
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {
       id: { notIn: excludeIds },
     };
@@ -195,6 +193,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     // Step 4: Fetch current user profile fields for similarity
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentUserProfile: any = {};
   if (validatedFilters.skills.length > 0) {
     const cachedCurrentUser = await getCachedUserProfile(validatedFilters.userId);
@@ -226,14 +225,14 @@ export async function GET(req: NextRequest) {
     // Step 5: Optional in-memory scoring and location filtering
     let processedUsers = users;
 
-    if (validatedFilters.enableLocationBasedMatching && validatedFilters.latitude && validatedFilters.longitude) {
-    processedUsers = processedUsers.filter(u => {
-      if (!u.latitude || !u.longitude) return false;
-      const distance = calculateDistance(validatedFilters.latitude, validatedFilters.longitude, u.latitude, u.longitude);
-      (u as any).distance = Math.round(distance);
-      return distance <= validatedFilters.maxDistance;
-    });
-  }
+  //   if (validatedFilters.enableLocationBasedMatching && validatedFilters.latitude && validatedFilters.longitude) {
+  //   processedUsers = processedUsers.filter(u => {
+  //     if (!u.latitude || !u.longitude) return false;
+  //     const distance = calculateDistance(validatedFilters.latitude, validatedFilters.longitude, u.latitude, u.longitude);
+  //     (u as any).distance = Math.round(distance);
+  //     return distance <= validatedFilters.maxDistance;
+  //   });
+  // }
 
     if (currentUserProfile.skills && currentUserProfile.domainExpertise && currentUserProfile.personalityTags) {
     processedUsers = processedUsers.map(u => {
@@ -256,6 +255,7 @@ export async function GET(req: NextRequest) {
         similarityScore: Math.round(calculateCosineSimilarity(currentUserVector, userVector) * 100) / 100,
       };
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     processedUsers.sort((a, b) => (b as any).similarityScore - (a as any).similarityScore);
   }
 
@@ -273,7 +273,9 @@ export async function GET(req: NextRequest) {
       yearsExperience: u.yearsExperience,
       domainExpertise: u.domainExpertise,
       skills: u.skills,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       similarityScore: (u as any).similarityScore,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       distance: (u as any).distance,
       pastProjects: u.pastProjects,
       startupInfo: u.startupInfo,

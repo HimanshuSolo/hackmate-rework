@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 import prismaClient from '@/lib/prsimadb';
 
@@ -15,11 +13,11 @@ export async function GET() {
     
     // Extract unique skills and domains
     const allSkills = Array.from(
-      new Set(users.flatMap(user => user.skills))
+      new Set(users.flatMap((user: { skills: string[]; })  => user.skills))
     ).sort();
     
     const allDomains = Array.from(
-      new Set(users.flatMap(user => user.domainExpertise))
+      new Set(users.flatMap((user: { domainExpertise: string[]; }) => user.domainExpertise))
     ).sort();
     
     // Add caching headers
