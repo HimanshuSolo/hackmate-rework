@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { NextResponse } from 'next/server';
 import prismaClient from '@/lib/prsimadb';
 import { z } from 'zod';
@@ -223,7 +221,8 @@ export async function PUT(request: Request) {
 
     try {
       // Update user with transaction
-      const updatedUser = await prismaClient.$transaction(async (tx) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedUser = await prismaClient.$transaction(async (tx: { user: { update: (arg0: { where: { id: string; }; data: { name: string; avatarUrl: string | undefined; description: string | undefined; location: string; personalityTags: string[]; workingStyle: "ASYNC" | "REAL_TIME" | "FLEXIBLE" | "STRUCTURED"; collaborationPref: "REMOTE" | "HYBRID" | "IN_PERSON" | "DOESNT_MATTER"; currentRole: string; yearsExperience: number; domainExpertise: string[]; skills: string[]; }; }) => any; }; contactInfo: { update: (arg0: { where: { userId: string; }; data: { email: string | undefined; twitterUrl: string | null; linkedinUrl: string | null; scheduleUrl: string | null; }; }) => any; create: (arg0: { data: { userId: string; email: string | undefined; twitterUrl: string | null; linkedinUrl: string | null; scheduleUrl: string | null; }; }) => any; }; project: { deleteMany: (arg0: { where: { id: { in: any; }; }; }) => any; update: (arg0: { where: { id: string; }; data: { name: string; description: string; link: string | null; }; }) => any; create: (arg0: { data: { name: string; description: string; link: string | null; userId: string; }; }) => any; }; startupinfo: { update: (arg0: { where: { userId: string; }; data: { startupStage: "IDEA" | "MVP" | "SCALING" | "EXITED"; startupGoals: string; startupCommitment: "EXPLORING" | "BUILDING" | "LAUNCHING" | "FULL_TIME_READY"; lookingFor: string[]; }; }) => any; create: (arg0: { data: { userId: string; startupStage: "IDEA" | "MVP" | "SCALING" | "EXITED"; startupGoals: string; startupCommitment: "EXPLORING" | "BUILDING" | "LAUNCHING" | "FULL_TIME_READY"; lookingFor: string[]; }; }) => any; }; }) => {
         // Update base user data
         const user = await tx.user.update({
           where: { id: userId },
@@ -244,7 +243,7 @@ export async function PUT(request: Request) {
 
         // Update contact info
         if (validatedData.contactInfo) {
-          if (existingUser.contactInfo) {
+          if (existingUser?.contactInfo) {
             // Update existing contact info
             await tx.contactInfo.update({
               where: { userId: userId },
@@ -272,7 +271,11 @@ export async function PUT(request: Request) {
         // Handle past projects
         if (validatedData.pastProjects) {
           // Get existing project IDs
-          const existingProjectIds = existingUser.pastProjects.map(p => p.id);
+          const existingProjectIds = existingUser?.pastProjects.map((p: { id: string; }) => p.id);
+          
+          if(!existingProjectIds){
+            throw Error("User doesn't have any existing projects")
+          }
           
           // Get project IDs from the updated data
           const updatedProjectIds = validatedData.pastProjects
@@ -281,7 +284,7 @@ export async function PUT(request: Request) {
           
           // Find projects to delete (exist in DB but not in updated data)
           const projectIdsToDelete = existingProjectIds.filter(
-            id => !updatedProjectIds.includes(id)
+            (id: string) => !updatedProjectIds.includes(id)
           );
           
           // Delete projects that are no longer in the updated data
@@ -321,7 +324,7 @@ export async function PUT(request: Request) {
         
         // Handle startup info
         if (validatedData.startupInfo) {
-          if (existingUser.startupInfo) {
+          if (existingUser?.startupInfo) {
             // Update existing startup info
             await tx.startupinfo.update({
               where: { userId: userId },
