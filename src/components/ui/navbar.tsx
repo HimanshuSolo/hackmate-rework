@@ -2,7 +2,6 @@
 
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
 import { ModeToggle } from './toggle-button'
 import { ChevronDown, Menu, UserRoundPen, UserSearch, Zap } from 'lucide-react'
 import {
@@ -15,7 +14,7 @@ import { Button } from './button'
 import { useEffect, useState } from 'react'
 
 export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
-  const [scrolled, setScrolled] = useState(false)
+  const [, setScrolled] = useState(false)
   const { isSignedIn } = useUser()
 
   // Handle scroll effects
@@ -29,12 +28,8 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
 
   return (
     <nav 
-      className={cn(
-        "flex items-center fixed top-0 z-50 w-full h-18 transition-all duration-200",
-        scrolled 
-          ? "fixed top-0 w-full border-b z-50  bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm" 
-          : "fixed top-0 w-full border-b z-50  bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
-      )}
+      className=
+        "flex items-center fixed top-0 z-50 w-full h-18 transition-all duration-200"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -62,12 +57,6 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
                           </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="overflow-y-auto [&>*]:text-lg md:[&>*]:text-base [&>*]:hover:cursor-pointer">
-                          {/* <DropdownMenuItem>
-                              <Link href={'/'} className='flex items-center gap-2'>
-                                  <House  className='h-8 w-8 md:h-6 md:w-6'/>
-                                  <span> Home </span>
-                              </Link>
-                          </DropdownMenuItem> */}
                           <DropdownMenuItem>
                               <Link href={'/explore'} className='flex items-center gap-2'>
                                   <UserSearch className='h-8 w-8 md:h-6 md:w-6'/>
