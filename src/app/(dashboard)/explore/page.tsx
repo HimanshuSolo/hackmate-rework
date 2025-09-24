@@ -21,10 +21,12 @@ import NoMoreProfilesState from '../../../components/ui/no-more-profiles-state'
 import MatchDialog from '../../../components/ui/match-dialogue'
 // import PaginationControls from '../../../components/ui/pagination-controls'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 
 export default function Explore() {
   const { user: clerkUser } = useUser()
+  const router = useRouter();
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [filterOpen, setFilterOpen] = useState(false)
   const [matchDialogOpen, setMatchDialogOpen] = useState(false)
@@ -44,6 +46,9 @@ export default function Explore() {
         
         setCurrentUser(response.data);
       } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          router.push('/onboarding'); // redirect to onboarding
+        }
         if(error instanceof Error){
           toast.error('Error while fetching user data');
           console.error('Error while fetching user data:', error.message);
