@@ -48,7 +48,7 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
             
               {isSignedIn ? (
                 <>
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                           <Button variant={'outline'} className='hover:cursor-pointer'>
                               <Menu className='h-6 w-6 block md:hidden' />
