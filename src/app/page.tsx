@@ -8,6 +8,7 @@ import { Navbar } from "@/components/ui/navbar"
 import Spline from '@splinetool/react-spline';
 import { M_PLUS_1p } from "next/font/google"
 import FixedBadges from "@/components/ui/fixed-badges"
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 
 const mPlus1p = M_PLUS_1p({
   subsets: ['latin'],
@@ -28,7 +29,7 @@ export default function LandingPage() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pt-11 md:pt-2">
       <Navbar />
       
       {/* Fixed badges for landing page only */}
@@ -38,7 +39,7 @@ export default function LandingPage() {
       <main>
         <div className="container mx-auto px-6 pt-8 pb-6 md:py-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
                 <h1 className="text-3xl md:text-6xl tracking-tight" style={{ ...mPlus1p.style, fontWeight: 500 }}>
                   <span className="text-primary block">Find Your Perfect</span>
@@ -49,17 +50,9 @@ export default function LandingPage() {
                   No social profiles, no fluff. Just raw experience, aligned intent, and mutual interest.
                 </p>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg"
-                  onClick={handleGetStarted}
-                  className="px-8 py-6 text-lg flex items-center gap-2 hover:cursor-pointer"
-                >
-                  Get Started
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </div>
+              <InteractiveHoverButton onClick={handleGetStarted}>
+                Get Started
+              </InteractiveHoverButton>
             </div>
             
             <div className="hidden md:block relative">

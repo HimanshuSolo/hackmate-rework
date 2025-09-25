@@ -12,7 +12,7 @@ const PeerlistBadge = () => {
                 <img
                     src="https://peerlist.io/api/v1/projects/embed/PRJHJKNR7KLEGQGOG1AQJJMBRREMRN?showUpvote=true&theme=light"
                     alt="HackMate"
-                    className="w-auto h-14 md:h-14 lg:h-15 shadow-lg rounded-lg hover:shadow-xl transition-all duration-300 border border-gray-200/20"
+                    className="w-auto h-14 md:h-14 lg:h-14 shadow-lg rounded-lg hover:shadow-xl transition-all duration-300 border border-gray-200/20"
                 />
             </a>
         </div>

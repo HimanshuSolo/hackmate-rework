@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <> 
       <AuthNavbar/>
-      <div className='mt-16'>
+      <div className='pt-16'>
         {children}
       </div>
     </>
