@@ -2,17 +2,17 @@
 
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles} from "lucide-react"
+import { Sparkles} from "lucide-react"
 import { Navbar } from "@/components/ui/navbar"
-import Spline from '@splinetool/react-spline';
+import Spline from '@splinetool/react-spline'
 import { M_PLUS_1p } from "next/font/google"
 import FixedBadges from "@/components/ui/fixed-badges"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import HowItWorks from "@/components/ui/how-it-works"
 
 const mPlus1p = M_PLUS_1p({
   subsets: ['latin'],
-  weight: ['100', '300', '400', '500']
+  weight: ['100', '300', '400', '500', '700']
 })
 
 export default function LandingPage() {
@@ -37,11 +37,35 @@ export default function LandingPage() {
       
       {/* Hero Section */}
       <main>
-        <div className="container mx-auto px-6 pt-8 pb-6 md:py-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-6 pt-10 pb-6 md:py-2 relative">
+          {/* Background Spline Component for Small Screens */}
+          <div className="md:hidden absolute inset-0 z-0 opacity-45 mt-2">
+            <Spline
+              style={{
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+              }}
+              scene="https://prod.spline.design/4IbP1LKZzqcXufXQ/scene.splinecode"
+            />
+            {/* Hide Spline watermark on mobile - positioned to match watermark location */}
+            <div 
+              className="absolute pointer-events-none z-10"
+              style={{
+                backgroundColor: 'hsl(0, 0%, 4%)',
+                bottom: '20px',
+                right: '20px',
+                width: '137px',
+                height: '36px',
+                borderRadius: '10px'
+              }}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
             <div className="space-y-4">
               <div>
-                <h1 className="text-3xl md:text-6xl tracking-tight" style={{ ...mPlus1p.style, fontWeight: 500 }}>
+                <h1 className="text-3xl md:text-6xl text-white/80 tracking-tight" style={{ ...mPlus1p.style, fontWeight: 600 }}>
                   <span className="text-primary block">Find Your Perfect</span>
                   <span className="block">Co-Founder</span>
                 </h1>
@@ -78,9 +102,11 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-
       </main>
-      
+
+      {/* How it works */}
+      <HowItWorks />
+
       {/* Footer */}
       <footer className="py-8 border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4">

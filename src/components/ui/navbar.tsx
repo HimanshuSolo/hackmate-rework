@@ -13,6 +13,12 @@ import {
 import { Button } from './button'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { Chakra_Petch } from 'next/font/google'
+
+const chakraPetch = Chakra_Petch({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700']
+})
 
 export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
   const [scrolled, setScrolled] = useState(false)
@@ -52,8 +58,8 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
       <div className={cn(
         "w-full transition-all duration-300 ease-out",
         scrolled 
-          ? "px-8 py-2" 
-          : "container mx-auto px-4 sm:px-6 lg:px-8 py-0"
+          ? "px-6 py-2" 
+          : "container mx-auto px-4 py-0"
       )}>
         <div className={cn(
           "flex items-center justify-between w-full transition-all duration-300 ease-out",
@@ -64,11 +70,14 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
           {/* Logo - Far Left */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center">
                 <Zap className={cn(
-                  "text-white transition-all duration-300 ease-out",
-                  scrolled ? "h-5 w-5" : "h-5 w-5"
+                  "text-blue-500/40 transition-all duration-300 ease-out mr-1",
+                  scrolled ? "h-5 w-5" : "h-6 w-6"
                 )} />
+                <div className={`${chakraPetch.className} text-lg md:text-xl text-white/85 select-none whitespace-nowrap`}>
+                  HackMate
+                </div>
               </div>
             </Link>
           </div>

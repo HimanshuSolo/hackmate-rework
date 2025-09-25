@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import ProductHuntBadge from './productHunt'
-import PeerlistBadge from './peerlistBadge'
+import ProductHuntBadge from './product-hunt'
+import PeerlistBadge from './peerlist-badge'
 
 const FixedBadges = () => {
     return (
