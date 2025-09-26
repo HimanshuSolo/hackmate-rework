@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { Sparkles} from "lucide-react"
@@ -18,6 +19,11 @@ const mPlus1p = M_PLUS_1p({
 export default function LandingPage() {
   const { isSignedIn } = useUser()
   const router = useRouter()
+  
+  // Scroll to top on page load/refresh
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   
   // Handle CTA button click
   const handleGetStarted = () => {
