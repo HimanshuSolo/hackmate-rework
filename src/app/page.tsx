@@ -3,17 +3,25 @@
 import { useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { Sparkles} from "lucide-react"
+import { Zap} from "lucide-react"
 import { Navbar } from "@/components/ui/navbar"
 import Spline from '@splinetool/react-spline'
 import { M_PLUS_1p } from "next/font/google"
 import FixedBadges from "@/components/ui/fixed-badges"
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 import HowItWorks from "@/components/ui/how-it-works"
+import Link from "next/link"
+import { Chakra_Petch } from 'next/font/google'
 
 const mPlus1p = M_PLUS_1p({
   subsets: ['latin'],
   weight: ['100', '300', '400', '500', '700']
+})
+
+  
+const chakraPetch = Chakra_Petch({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700']
 })
 
 export default function LandingPage() {
@@ -33,6 +41,7 @@ export default function LandingPage() {
       router.push('/sign-in')
     }
   }
+
   
   return (
     <div className="min-h-screen flex flex-col pt-11 md:pt-2">
@@ -117,11 +126,16 @@ export default function LandingPage() {
       <footer className="py-8 border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <span className="font-bold">Hackmate</span>
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <div className="flex items-center justify-center">
+                  <Zap className="text-blue-500/40 transition-all duration-300 ease-out mr-1" />
+                  <div className={`${chakraPetch.className} text-lg md:text-xl text-white/85 select-none whitespace-nowrap`}>
+                    HackMate
+                  </div>
+                </div>
+              </Link>
             </div>
-            
             <div className="text-sm text-gray-500 dark:text-gray-400">
               &copy; {new Date().getFullYear()} Hackmate. All rights reserved.
             </div>
