@@ -12,6 +12,8 @@ import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button
 import HowItWorks from "@/components/ui/how-it-works"
 import Link from "next/link"
 import { Chakra_Petch } from 'next/font/google'
+import { Testimonials } from "@/components/ui/testimonials"
+import Image from "next/image"
 
 const mPlus1p = M_PLUS_1p({
   subsets: ['latin'],
@@ -44,7 +46,7 @@ export default function LandingPage() {
 
   
   return (
-    <div className="min-h-screen flex flex-col pt-11 md:pt-2">
+    <div className="min-h-screen flex flex-col pt-11 md:pt-2 bg-black">
       <Navbar />
       
       {/* Fixed badges for landing page only */}
@@ -53,28 +55,21 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main>
         <div className="container mx-auto px-6 pt-10 pb-6 md:py-2 relative">
-          {/* Background Spline Component for Small Screens */}
-          <div className="md:hidden absolute inset-0 z-0 opacity-45 mt-2">
-            <Spline
-              style={{
-                width: "100%",
-                height: "100%",
-                pointerEvents: "none",
-              }}
-              scene="https://prod.spline.design/4IbP1LKZzqcXufXQ/scene.splinecode"
-            />
-            {/* Hide Spline watermark on mobile - positioned to match watermark location */}
-            <div 
-              className="absolute pointer-events-none z-10"
-              style={{
-                backgroundColor: 'hsl(0, 0%, 4%)',
-                bottom: '20px',
-                right: '20px',
-                width: '137px',
-                height: '36px',
-                borderRadius: '10px'
-              }}
-            />
+          {/* Background GIF for Mobile Screens */}
+          <div className="md:hidden absolute inset-0 z-0 opacity-35 flex items-center justify-center">
+            <div className="w-[300px] h-[300px] sm:w-[350px] sm:h-[350px] relative">
+              <Image
+                src="https://res.cloudinary.com/dlv779rl7/image/upload/v1758904247/Adobe_Express_-_Untitled_video_-_Made_with_Clipchamp_d7jpf2.gif"
+                alt="3D Animation"
+                fill
+                style={{
+                  objectFit: "contain",
+                  pointerEvents: "none",
+                }}
+                priority
+                unoptimized // Allows GIF animation
+              />
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
@@ -96,23 +91,23 @@ export default function LandingPage() {
             
             <div className="hidden md:block relative">
               <Spline
-                style={{
-                  width: "100%",
-                  height: "100vh",
-                  pointerEvents: "auto",
-                }}
-                
-                scene="https://prod.spline.design/4IbP1LKZzqcXufXQ/scene.splinecode"
+              style={{
+                width: "100%",
+                height: "100vh",
+                pointerEvents: "auto",
+              }}
+              
+              scene="https://prod.spline.design/4IbP1LKZzqcXufXQ/scene.splinecode"
               />
               <div 
-                className="absolute pointer-events-none z-50"
-                style={{
-                  backgroundColor: 'hsl(0, 0%, 4%)',
-                  bottom: '15px',
-                  right: '15px',
-                  width: '200px',
-                  height: '60px'
-                }}
+              className="absolute pointer-events-none z-50"
+              style={{
+                backgroundColor: '#000000',
+                bottom: '15px',
+                right: '15px',
+                width: '200px',
+                height: '60px'
+              }}
               />
             </div>
           </div>
@@ -121,6 +116,8 @@ export default function LandingPage() {
 
       {/* How it works */}
       <HowItWorks />
+
+      <Testimonials />
 
       {/* Footer */}
       <footer className="py-8 border-t border-gray-200 dark:border-gray-800">

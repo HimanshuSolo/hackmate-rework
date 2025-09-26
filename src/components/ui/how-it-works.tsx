@@ -39,19 +39,116 @@ const HowItWorks = () => {
                 </div>
 
                 {/* Responsive card grid with centered layout and proper spacing */}
-                <div className="relative py-8 px-4">
-                    {/* Rhombus mesh background with extended padding */}
-                    <div 
-                        className="absolute -inset-16 opacity-60"
-                        style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M12 0L24 12L12 24L0 12z' stroke='%23003d82' stroke-width='0.8'/%3E%3C/g%3E%3C/svg%3E")`,
-                            backgroundSize: '22px 22px',
-                            backgroundPosition: '0 0, 12px 12px',
-                            maskImage: 'radial-gradient(ellipse 85% 75% at center, rgba(0,0,0,1) 10%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 90%)',
-                            WebkitMaskImage: 'radial-gradient(ellipse 85% 75% at center, rgba(0,0,0,1) 10%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 90%)'
-                        }}
-                    />
-                    
+                    <div className="relative py-8 px-4">
+                        {/* Rhombus mesh background with enhanced fade-in effect */}
+                        <div 
+                            className="absolute left-0 right-0 -bottom-16 -top-4 lg:-left-32 lg:-right-32 lg:-bottom-20 opacity-80"
+                            style={{
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M12 0L24 12L12 24L0 12z' stroke='%23004a8a' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E")`,
+                                backgroundSize: '22px 22px',
+                                backgroundPosition: '0 0, 12px 12px',
+                                maskImage: `
+                                    radial-gradient(ellipse 110% 90% at center, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.1) 15%, 
+                                        rgba(0,0,0,0.3) 25%, 
+                                        rgba(0,0,0,0.6) 35%, 
+                                        rgba(0,0,0,0.8) 45%, 
+                                        rgba(0,0,0,0.95) 55%, 
+                                        rgba(0,0,0,0.8) 65%, 
+                                        rgba(0,0,0,0.6) 75%, 
+                                        rgba(0,0,0,0.3) 85%, 
+                                        rgba(0,0,0,0.1) 95%, 
+                                        rgba(0,0,0,0) 100%
+                                    ),
+                                    linear-gradient(to right, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.05) 5%, 
+                                        rgba(0,0,0,0.2) 15%, 
+                                        rgba(0,0,0,0.5) 25%, 
+                                        rgba(0,0,0,0.8) 35%, 
+                                        rgba(0,0,0,1) 50%, 
+                                        rgba(0,0,0,0.8) 65%, 
+                                        rgba(0,0,0,0.5) 75%, 
+                                        rgba(0,0,0,0.2) 85%, 
+                                        rgba(0,0,0,0.05) 95%, 
+                                        rgba(0,0,0,0) 100%
+                                    ),
+                                    linear-gradient(to bottom, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.1) 8%, 
+                                        rgba(0,0,0,0.4) 18%, 
+                                        rgba(0,0,0,0.7) 28%, 
+                                        rgba(0,0,0,0.9) 35%, 
+                                        rgba(0,0,0,1) 50%, 
+                                        rgba(0,0,0,0.9) 65%, 
+                                        rgba(0,0,0,0.7) 72%, 
+                                        rgba(0,0,0,0.4) 82%, 
+                                        rgba(0,0,0,0.1) 92%, 
+                                        rgba(0,0,0,0) 100%
+                                    )
+                                `,
+                                WebkitMaskImage: `
+                                    radial-gradient(ellipse 110% 90% at center, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.1) 15%, 
+                                        rgba(0,0,0,0.3) 25%, 
+                                        rgba(0,0,0,0.6) 35%, 
+                                        rgba(0,0,0,0.8) 45%, 
+                                        rgba(0,0,0,0.95) 55%, 
+                                        rgba(0,0,0,0.8) 65%, 
+                                        rgba(0,0,0,0.6) 75%, 
+                                        rgba(0,0,0,0.3) 85%, 
+                                        rgba(0,0,0,0.1) 95%, 
+                                        rgba(0,0,0,0) 100%
+                                    ),
+                                    linear-gradient(to right, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.05) 5%, 
+                                        rgba(0,0,0,0.2) 15%, 
+                                        rgba(0,0,0,0.5) 25%, 
+                                        rgba(0,0,0,0.8) 35%, 
+                                        rgba(0,0,0,1) 50%, 
+                                        rgba(0,0,0,0.8) 65%, 
+                                        rgba(0,0,0,0.5) 75%, 
+                                        rgba(0,0,0,0.2) 85%, 
+                                        rgba(0,0,0,0.05) 95%, 
+                                        rgba(0,0,0,0) 100%
+                                    ),
+                                    linear-gradient(to bottom, 
+                                        rgba(0,0,0,0) 0%, 
+                                        rgba(0,0,0,0.1) 8%, 
+                                        rgba(0,0,0,0.4) 18%, 
+                                        rgba(0,0,0,0.7) 28%, 
+                                        rgba(0,0,0,0.9) 35%, 
+                                        rgba(0,0,0,1) 50%, 
+                                        rgba(0,0,0,0.9) 65%, 
+                                        rgba(0,0,0,0.7) 72%, 
+                                        rgba(0,0,0,0.4) 82%, 
+                                        rgba(0,0,0,0.1) 92%, 
+                                        rgba(0,0,0,0) 100%
+                                    )
+                                `,
+                                maskComposite: 'intersect',
+                                WebkitMaskComposite: 'source-in'
+                            }}
+                        />
+                        
+                        {/* Additional subtle glow effect for enhanced visibility */}
+                        <div 
+                            className="absolute left-0 right-0 -bottom-8 -top-2 lg:-left-16 lg:-right-16 lg:-bottom-12 opacity-30 pointer-events-none"
+                            style={{
+                                background: `
+                                    radial-gradient(ellipse 80% 60% at center, 
+                                        rgba(0, 74, 138, 0.15) 0%, 
+                                        rgba(0, 74, 138, 0.1) 30%, 
+                                        rgba(0, 74, 138, 0.05) 60%, 
+                                        transparent 100%
+                                    )
+                                `,
+                                filter: 'blur(1px)'
+                            }}
+                        />
                     {/* Card grid content */}
                     <div className='px-6'>
                         <div className="relative flex flex-col lg:flex-row justify-center items-center lg:items-stretch gap-4 sm:gap-6 lg:gap-8 xl:gap-12">
