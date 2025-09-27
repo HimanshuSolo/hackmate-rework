@@ -54,7 +54,7 @@ export const TestimonialsColumn = (props: {
     if (isLegacyTestimonial(testimonial)) {
       // Render legacy testimonial format
       return (
-        <div className="p-4 sm:p-6 rounded-2xl border border-gray-800/50 bg-black/20 backdrop-blur-sm shadow-lg shadow-primary/10 w-full max-w-sm mx-auto hover:border-gray-700/50 transition-all duration-300" key={`legacy-${index}`}>
+        <div className="p-4 sm:p-6 rounded-2xl border border-gray-800/50 bg-black/20 backdrop-blur-sm shadow-lg shadow-primary/10 w-full max-w-sm mx-auto hover:border-gray-700/50 transition-all duration-300 will-change-transform" key={`legacy-${index}`} style={{transform: "translate3d(0, 0, 0)"}}>
           <div className="text-gray-200 text-sm sm:text-base leading-relaxed mb-4">{testimonial.text}</div>
           <div className="flex items-center gap-3">
             <Image
@@ -76,7 +76,7 @@ export const TestimonialsColumn = (props: {
     // Render new testimonial types with proper type guards
     if (isTwitterTestimonial(testimonial)) {
       return (
-        <div key={`twitter-${testimonial.id}`} className="w-full max-w-sm mx-auto">
+        <div key={`twitter-${testimonial.id}`} className="w-full max-w-sm mx-auto will-change-transform" style={{transform: "translate3d(0, 0, 0)"}}>
           <TwitterEmbed 
             tweetId={testimonial.tweetId}
             className="w-full"
@@ -108,7 +108,7 @@ export const TestimonialsColumn = (props: {
       const customTestimonial = testimonial as any;
       
       return (
-        <div className="p-4 sm:p-6 rounded-2xl border border-gray-800/50 bg-black/20 backdrop-blur-sm shadow-lg shadow-primary/10 w-full max-w-sm mx-auto hover:border-gray-700/50 transition-all duration-300" key={`custom-${customTestimonial.id}`}>
+        <div className="p-4 sm:p-6 rounded-2xl border border-gray-800/50 bg-black/20 backdrop-blur-sm shadow-lg shadow-primary/10 w-full max-w-sm mx-auto hover:border-gray-700/50 transition-all duration-300 will-change-transform" key={`custom-${customTestimonial.id}`} style={{transform: "translate3d(0, 0, 0)"}}>
           <div className="text-gray-200 text-sm sm:text-base leading-relaxed mb-4">{customTestimonial.text}</div>
           <div className="flex items-center gap-3">
             <Image
@@ -142,7 +142,11 @@ export const TestimonialsColumn = (props: {
           ease: "linear",
           repeatType: "loop",
         }}
-        className="flex flex-col gap-4 sm:gap-6 pb-4 sm:pb-6 bg-transparent"
+        className="flex flex-col gap-4 sm:gap-6 pb-4 sm:pb-6 bg-transparent will-change-transform transform-gpu"
+        style={{
+          transform: "translate3d(0, 0, 0)", // Force GPU acceleration
+          backfaceVisibility: "hidden", // Reduce rendering artifacts
+        }}
       >
         {[
           ...new Array(2).fill(0).map((_, index) => (
