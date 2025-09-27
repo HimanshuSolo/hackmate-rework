@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-//@ts-nocheck
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { FilterOptions, User } from '../types'
 import axios from 'axios'
@@ -33,7 +30,7 @@ export function useProfileFiltering(filters: FilterOptions) {
         params: { userId: clerkUser.id },
       })
       if (data?.viewedProfiles) {
-        setViewedProfileIds(data.viewedProfiles.map((v: any) => v.userBId))
+        setViewedProfileIds(data.viewedProfiles.map((v: { userBId: string }) => v.userBId))
       }
     } catch (err) {
       console.error('Error fetching viewed profiles:', err)
@@ -50,7 +47,7 @@ export function useProfileFiltering(filters: FilterOptions) {
         params: { userId: clerkUser.id, mutual: true },
       })
       if (data?.matches) {
-        const ids = data.matches.map((m: any) =>
+        const ids = data.matches.map((m: { userAId: string; userBId: string }) =>
           m.userAId === clerkUser.id ? m.userBId : m.userAId
         )
         setMutualMatchIds(ids)
@@ -86,7 +83,7 @@ export function useProfileFiltering(filters: FilterOptions) {
     if (filters.domains.length) params.append('domains', filters.domains.join(','))
     if (filters.workingStyles.length) params.append('workingStyles', filters.workingStyles.join(','))
     if (filters.collaborationPrefs.length) params.append('collaborationPrefs', filters.collaborationPrefs.join(','))
-    if (filters.startupStages.length) params.append('startupStages', filters.startupStages.join(','))
+    if (filters.startupStages?.length) params.append('startupStages', filters.startupStages.join(','))
 
     if (filters.enableLocationBasedMatching && filters.userCoordinates) {
       params.append('latitude', filters.userCoordinates.latitude.toString())
