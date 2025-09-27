@@ -1,96 +1,133 @@
 import { TestimonialsColumn } from "@/components/ui/testimonials-columns-1";
 import { motion } from "motion/react";
+import { TestimonialItem, balanceTestimonialTypes } from "@/lib/testimonial-utils";
+import { M_PLUS_1p } from "next/font/google";
 
-const testimonials = [
+const mPlus1p = M_PLUS_1p({
+    subsets: ['latin'],
+    weight: ['500']
+})
+
+// Testimonials data - Replace with your real testimonials
+const testimonials: TestimonialItem[] = [
+    // {
+    //     type: "custom",
+    //     id: "custom-1", 
+    //     text: "Your testimonial text here...",
+    //     image: "/",
+    //     name: "User Name",
+    //     role: "User Role",
+    // },
     {
-        text: "This ERP revolutionized our operations, streamlining finance and inventory. The cloud-based platform keeps us productive, even remotely.",
-        image: "https://randomuser.me/api/portraits/women/1.jpg",
-        name: "Briana Patton",
-        role: "Operations Manager",
+        type: "twitter",
+        id: "twitter-1",
+        tweetId: "1970102716899696646",
     },
     {
-        text: "Implementing this ERP was smooth and quick. The customizable, user-friendly interface made team training effortless.",
-        image: "https://randomuser.me/api/portraits/men/2.jpg",
-        name: "Bilal Ahmed",
-        role: "IT Manager",
+        type: "twitter",
+        id: "twitter-2",
+        tweetId: "1970089201128653270",
     },
     {
-        text: "The support team is exceptional, guiding us through setup and providing ongoing assistance, ensuring our satisfaction.",
-        image: "https://randomuser.me/api/portraits/women/3.jpg",
-        name: "Saman Malik",
-        role: "Customer Support Lead",
+        type: "twitter",
+        id: "twitter-3",
+        tweetId: "1970167197051052042",
     },
     {
-        text: "This ERP's seamless integration enhanced our business operations and efficiency. Highly recommend for its intuitive interface.",
-        image: "https://randomuser.me/api/portraits/men/4.jpg",
-        name: "Omar Raza",
-        role: "CEO",
+        type: "twitter",
+        id: "twitter-4",
+        tweetId: "1970165220258509231",
     },
     {
-        text: "Its robust features and quick support have transformed our workflow, making us significantly more efficient.",
-        image: "https://randomuser.me/api/portraits/women/5.jpg",
-        name: "Zainab Hussain",
-        role: "Project Manager",
+        type: "peerlist",
+        id: "peerlist-1",
+        author: {
+            name: "Krishna Kant",
+            username: "krixn",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UHGNL96GAJ6EE781M6DJNPNNQBRM/hgnl96gaj6ee781m6djnpnnqbrm-2580-profile.webp",
+            title: "Front End Dev",
+        },
+        content: "This is so coool and has great usecase",
     },
     {
-        text: "The smooth implementation exceeded expectations. It streamlined processes, improving overall business performance.",
-        image: "https://randomuser.me/api/portraits/women/6.jpg",
-        name: "Aliza Khan",
-        role: "Business Analyst",
+        type: "peerlist",
+        id: "peerlist-2",
+        author: {
+            name: "Rohan Sharma",
+            username: "rohansrma",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UH6AJB6DDEJONPO2RGQ7PQPQAOOR/h6ajb6ddejonpo2rgq7pqpqaoor-profile",
+            title: "Web Developer || UI/UX designer",
+        },
+        content: "Let's see who's my match!",
     },
     {
-        text: "Our business functions improved with a user-friendly design and positive customer feedback.",
-        image: "https://randomuser.me/api/portraits/men/7.jpg",
-        name: "Farhan Siddiqui",
-        role: "Marketing Director",
+        type: "peerlist",
+        id: "peerlist-3",
+        author: {
+            name: "Naman Jain",
+            username: "namanjain152003",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UHR8D66P8R9EQERFDEPDDKQG6OAN/hr8d66p8r9eqerfdepddkqg6oan-5583-profile.webp",
+            title: "Developer",
+        },
+        content: "Great work and solving the real world problem",
     },
     {
-        text: "They delivered a solution that exceeded expectations, understanding our needs and enhancing our operations.",
-        image: "https://randomuser.me/api/portraits/women/8.jpg",
-        name: "Sana Sheikh",
-        role: "Sales Manager",
-    },
-    {
-        text: "Using this ERP, our online presence and conversions significantly improved, boosting business performance.",
-        image: "https://randomuser.me/api/portraits/men/9.jpg",
-        name: "Hassan Ali",
-        role: "E-commerce Manager",
+        type: "producthunt",
+        id: "ph-1", 
+        author: {
+            name: "Bogdan Ivtsjenko",
+            username: "bogdan_ivtsjenko1",
+            avatar: "https://ph-avatars.imgix.net/6254640/0f0c3c29-8fdd-44d2-9b38-44ce44eafa06.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+            title: "Software Engineer",
+            isMaker: false,
+        },
+        content: "This looks really cool! The real, time collaboration feature is impressive, especially how it can help with instant feedback.",
+        badge: "daily_winner",
     },
 ];
 
-const firstColumn = testimonials.slice(0, 3);
-const secondColumn = testimonials.slice(3, 6);
-const thirdColumn = testimonials.slice(6, 9);
+// Use balanced distribution to ensure good mix across columns
+const [firstColumn, secondColumn, thirdColumn] = testimonials.length > 0 
+    ? balanceTestimonialTypes(testimonials, 3) 
+    : [[], [], []];
 
 const Testimonials = () => {
     return (
-        <section className="bg-background my-20 relative">
-
-        <div className="container z-10 mx-auto">
+        <section className="my-12 sm:my-16 md:my-20 relative">
+        {/* Dark blurred glass background */}
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-xl border border-gray-800/20 rounded-2xl sm:rounded-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/10 via-black/30 to-gray-900/10"></div>
+        
+        <div className="container z-10 mx-auto relative py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="flex flex-col items-center justify-center max-w-[540px] mx-auto"
+            className="flex flex-col items-center justify-center max-w-2xl mx-auto"
             >
-            <div className="flex justify-center">
-                <div className="border py-1 px-4 rounded-lg">Testimonials</div>
-            </div>
-
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter mt-5">
-                What our users say
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter mt-3 sm:mt-5 text-white text-center" style={{ ...mPlus1p.style, fontWeight: 600 }}>
+                What our community says
             </h2>
-            <p className="text-center mt-5 opacity-75">
-                See what our customers have to say about us.
+            <p className="text-center mt-4 sm:mt-5 text-gray-300 text-base sm:text-lg max-w-lg">
+                See what developers and makers are saying about Hackmate across different platforms.
             </p>
             </motion.div>
 
-            <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
-            <TestimonialsColumn testimonials={firstColumn} duration={15} />
-            <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />
-            <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
+            {testimonials.length > 0 ? (
+            <div className="flex justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[500px] sm:max-h-[600px] md:max-h-[740px] overflow-hidden">
+                <TestimonialsColumn testimonials={firstColumn} duration={15} />
+                <TestimonialsColumn testimonials={secondColumn} className="hidden sm:block" duration={19} />
+                <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
             </div>
+            ) : (
+            <div className="flex justify-center mt-8 sm:mt-10">
+                <div className="text-center text-gray-400 p-6 sm:p-8">
+                <p className="text-base sm:text-lg">Add your testimonials to showcase community feedback.</p>
+                <p className="text-sm sm:text-base mt-2">Edit the testimonials array in testimonials.tsx to get started.</p>
+                </div>
+            </div>
+            )}
         </div>
         </section>
     );
