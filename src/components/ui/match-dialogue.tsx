@@ -60,7 +60,7 @@ export default function MatchDialog({
       <DialogContent className={`sm:max-w-md max-h-[90vh] overflow-y-auto bg-neutral-950 border border-neutral-800 rounded-xl shadow-lg p-0 ${mPlus1p.className}`}>
         <DialogHeader className="pt-6 px-6">
           <DialogTitle className="text-center text-white/90" style={{ fontWeight: 700 }}>
-            It&apos;s a Match! 🎉
+            It&apos;s a Match!
           </DialogTitle>
           <DialogDescription className="text-center text-blue-300" style={{ fontWeight: 400 }}>
             You and {matchedUser.name} have liked each other
