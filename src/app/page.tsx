@@ -149,7 +149,7 @@ export default function LandingPage() {
                 rel="noopener noreferrer"
                 className="underline hover:text-blue-500"
               >
-                Anant Sharma
+                Anant Kumar Sharma
               </a>
             </div>
             {/* All rights reserved */}
