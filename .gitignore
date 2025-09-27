@@ -50,3 +50,6 @@ lib/generated/client/
 ./lib/generated/
 ./lib/generated/client/
 lib\generated\client
+
+node_modules/
+node_modules_old/

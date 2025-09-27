@@ -84,14 +84,30 @@ const testimonials: TestimonialItem[] = [
         content: "This looks really cool! The real, time collaboration feature is impressive, especially how it can help with instant feedback.",
         badge: "daily_winner",
     },
+    {
+        type: "producthunt",
+        id: "ph-2", 
+        author: {
+            name: "Richard Hummer",
+            username: "bogdan_ivtsjenko1",
+            avatar: "https://ph-avatars.imgix.net/9029221/a692966e-94fe-47d3-80ac-22adea8b59be.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=32&h=32&fit=crop&frame=1&dpr=2",
+            title: "Growth Management",
+            isMaker: false,
+        },
+        content: "damn! it’s rare to find a platform that connects builders so naturally",
+        badge: "featured",
+    }
 ];
 
-// Use balanced distribution to ensure good mix across columns
-const [firstColumn, secondColumn, thirdColumn] = testimonials.length > 0 
-    ? balanceTestimonialTypes(testimonials, 3) 
-    : [[], [], []];
-
 const Testimonials = () => {
+    // Responsive testimonial distribution
+    // Mobile (< sm): All testimonials in 1 column
+    // Tablet (sm to lg): All testimonials in 2 columns  
+    // Desktop (lg+): All testimonials in 3 columns
+    const mobileColumns = testimonials.length > 0 ? [testimonials] : [[]];
+    const tabletColumns = testimonials.length > 0 ? balanceTestimonialTypes(testimonials, 2) : [[], []];
+    const desktopColumns = testimonials.length > 0 ? balanceTestimonialTypes(testimonials, 3) : [[], [], []];
+
     return (
         <section className="my-12 sm:my-16 md:my-20 relative">
         {/* Dark blurred glass background */}
@@ -107,7 +123,7 @@ const Testimonials = () => {
             className="flex flex-col items-center justify-center max-w-2xl mx-auto"
             >
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter mt-3 sm:mt-5 text-white text-center" style={{ ...mPlus1p.style, fontWeight: 600 }}>
-                What our community says
+                What our users say
             </h2>
             <p className="text-center mt-4 sm:mt-5 text-gray-300 text-base sm:text-lg max-w-lg">
                 See what developers and makers are saying about Hackmate across different platforms.
@@ -115,11 +131,25 @@ const Testimonials = () => {
             </motion.div>
 
             {testimonials.length > 0 ? (
-            <div className="flex justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[500px] sm:max-h-[600px] md:max-h-[740px] overflow-hidden">
-                <TestimonialsColumn testimonials={firstColumn} duration={15} />
-                <TestimonialsColumn testimonials={secondColumn} className="hidden sm:block" duration={19} />
-                <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
-            </div>
+            <>
+                {/* Mobile: Single column with all testimonials and optimized animation */}
+                <div className="sm:hidden flex justify-center gap-4 mt-8 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[600px] overflow-hidden">
+                    <TestimonialsColumn testimonials={mobileColumns[0]} duration={15} />
+                </div>
+                
+                {/* Tablet: Two columns with all testimonials distributed */}
+                <div className="hidden sm:flex lg:hidden justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[600px] overflow-hidden">
+                    <TestimonialsColumn testimonials={tabletColumns[0]} duration={15} />
+                    <TestimonialsColumn testimonials={tabletColumns[1]} duration={19} />
+                </div>
+                
+                {/* Desktop: Three columns */}
+                <div className="hidden lg:flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
+                    <TestimonialsColumn testimonials={desktopColumns[0]} duration={15} />
+                    <TestimonialsColumn testimonials={desktopColumns[1]} duration={19} />
+                    <TestimonialsColumn testimonials={desktopColumns[2]} duration={17} />
+                </div>
+            </>
             ) : (
             <div className="flex justify-center mt-8 sm:mt-10">
                 <div className="text-center text-gray-400 p-6 sm:p-8">
