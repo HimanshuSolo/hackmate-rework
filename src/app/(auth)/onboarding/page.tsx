@@ -32,6 +32,7 @@
   import { toast } from "sonner"
   import { uploadOnCloudinary } from '@/lib/cloudinary';
   import { M_PLUS_1p } from "next/font/google"
+import Image from "next/image"
 
   const mPlus1p = M_PLUS_1p({
     subsets: ['latin'],
@@ -96,16 +97,40 @@
   ]
 
   const skillOptions = [
-    "JavaScript", "React", "Node.js", "Python", "Java",
-    "Product Management", "UI/UX Design", "Data Science",
-    "Machine Learning", "Marketing", "Sales", "Business Development"
-  ]
+    "Frontend Development",
+    "Backend Development",
+    "Full Stack Development",
+    "Mobile Development",
+    "UI/UX Design",
+    "Product Management",
+    "Business Development",
+    "Sales",
+    "Marketing & Growth",
+    "Finance & Accounting",
+    "Fundraising",
+    "Operations & Management",
+    "Data Science",
+    "Machine Learning / AI",
+    "Cloud & DevOps",
+    "Cybersecurity",
+    "Hardware Engineering",
+    "Research & Analysis",
+    "Legal & Compliance",
+    "People & HR"
+  ];
 
   const domainOptions = [
-    "SaaS", "E-commerce", "FinTech", "HealthTech",
-    "EdTech", "AI/ML", "Blockchain", "IoT",
-    "Mobile Apps", "Enterprise Software"
-  ]
+  "Software Development",
+  "Product & Design",
+  "Business & Strategy",
+  "Growth & Marketing",
+  "Finance & Legal",
+  "Sales & Partnerships",
+  "Data & AI",
+  "Hardware & Engineering",
+  "Research & Innovation",
+  "People & Culture"
+];
 
   export default function OnboardingForm() {
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -113,8 +138,6 @@
     const userId = user?.id;
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(true)
-
-
 
     useEffect(() => {
       // Check if user exists and has completed onboarding
@@ -179,15 +202,12 @@
         // Create FormData object for multipart/form-data submission
         const formData = new FormData()
         let avatarUrl: string | undefined;
-
         
         // Add avatar file if it exists
         if (values.avatar?.[0]) {
             const uploadResult = await uploadOnCloudinary(values.avatar[0]);
             avatarUrl = uploadResult.secure_url;
         }
-        
-
         
         // Prepare the user data object
         const userData = {
@@ -246,9 +266,8 @@
       </div>;
     }
     
-
     return (
-      <div className="max-w-3xl mx-auto p-6 space-y-8 bg-neutral-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg">
+      <div className="max-w-3xl mx-2 sm:mx-4 md:mx-auto p-6 space-y-8 bg-neutral-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>
             Complete Your Profile
@@ -308,7 +327,7 @@
                   <FormControl>
                     <div className="flex items-center gap-4">
                       {value && (
-                        <img
+                        <Image
                           src={URL.createObjectURL(value[0])}
                           alt="Profile preview"
                           className="w-20 h-20 rounded-full object-cover"
