@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
     // Check if this operation was recently performed (debounce)
     const recentlyProcessed = await redisClient.get(cacheKey);
     if (recentlyProcessed) {
-      console.log('Debounced: Unlike operation recently processed');
       return NextResponse.json({
         success: true,
         message: 'Profile already marked as passed',

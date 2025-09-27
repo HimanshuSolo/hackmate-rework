@@ -41,7 +41,7 @@ export default function MobileFilterSheet({
           Filters
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[320px] sm:w-[480px] overflow-y-auto px-4">
+      <SheetContent side="right" className="w-[320px] sm:w-[500px] overflow-y-auto px-4">
         <SheetHeader className="-ml-3">
           <SheetTitle>Filters</SheetTitle>
           <SheetDescription>
@@ -60,12 +60,6 @@ export default function MobileFilterSheet({
             onClose={() => onOpenChange(false)}
           />
         </ScrollArea>
-        
-        {/* <SheetFooter className="mt-4">
-          <Button onClick={() => onOpenChange(false)} className='hover:cursor-pointer'>
-            Apply Filters
-          </Button>
-        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   )

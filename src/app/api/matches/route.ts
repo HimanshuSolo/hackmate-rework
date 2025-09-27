@@ -31,14 +31,12 @@ export async function GET(request: NextRequest) {
     const cachedMatches = await getValue(cacheKey);
     
     if (cachedMatches) {
-      console.log('Cache hit: Returning cached matches');
       return NextResponse.json(
         JSON.parse(cachedMatches),
         { headers }
       );
     }
     
-    console.log('Cache miss: Fetching matches from database');
     
     // Build the query to get matches
     const matchQuery = {
@@ -147,7 +145,6 @@ export async function POST(request: NextRequest) {
     // Check if this operation was recently performed (debounce)
     const recentlyProcessed = await redisClient.get(debounceKey);
     if (recentlyProcessed) {
-      console.log('Debounced: Like operation recently processed');
       return NextResponse.json({
         success: true,
         message: 'Like already processed',

@@ -122,23 +122,43 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-8 border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center">
-                <div className="flex items-center justify-center">
-                  <Zap className="text-blue-500/40 transition-all duration-300 ease-out mr-1" />
-                  <div className={`${chakraPetch.className} text-lg md:text-xl text-white/85 select-none whitespace-nowrap`}>
-                    HackMate
-                  </div>
-                </div>
-              </Link>
+          <div className="flex flex-col items-start">
+            {/* Logo */}
+            <Link href="/" className="flex items-center mb-3">
+              <Zap className="text-blue-500/40 transition-all duration-300 ease-out mr-1" />
+              <div className={`${chakraPetch.className} text-lg md:text-xl text-white/85 select-none whitespace-nowrap`}>
+                HackMate
+              </div>
+            </Link>
+            {/* Made by */}
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              Made by{' '}
+              <a
+                href="https://dilpreetgrover.is-a.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-500"
+              >
+                Dilpreet Grover
+              </a>
+              {' '}and{' '}
+              <a
+                href="https://www.anantx.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-500"
+              >
+                Anant Sharma
+              </a>
             </div>
+            {/* All rights reserved */}
             <div className="text-sm text-gray-500 dark:text-gray-400">
               &copy; {new Date().getFullYear()} Hackmate. All rights reserved.
             </div>
           </div>
         </div>
       </footer>
+
     </div>
   )
 }

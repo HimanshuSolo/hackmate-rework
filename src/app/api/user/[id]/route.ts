@@ -60,7 +60,6 @@ export async function GET(
     const cachedUser = await getCachedUserProfile(userId);
     
     if (cachedUser) {
-      console.log('Cache hit: Returning cached user profile');
       
       // Get related data from cache
       const cachedRelations = {
@@ -109,7 +108,6 @@ export async function GET(
       }
     }
     
-    console.log('Cache miss: Fetching user from database');
     
     // Fetch the user and all related data from the database
     const user = await prismaClient.user.findUnique({

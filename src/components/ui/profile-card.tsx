@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 //@ts-nocheck
-import { motion, MotionValue } from 'framer-motion'
+'use client'
+
+import { motion } from 'framer-motion'
 import {
   Card,
   CardContent,
@@ -19,25 +21,18 @@ import {
   ExternalLink,
   AlertCircle,
 } from "lucide-react"
-import { User } from '../../types'
+import { M_PLUS_1p } from "next/font/google"
 import { 
-  WORKING_STYLE_LABELS, 
-  COLLABORATION_PREF_LABELS, 
-  STARTUP_STAGE_LABELS, 
+  WORKING_STYLE_LABELS,
+  COLLABORATION_PREF_LABELS,
+  STARTUP_STAGE_LABELS,
   COMMITMENT_LEVEL_LABELS,
 } from '../../constants'
 
-interface ProfileCardProps {
-  activeUser: User
-  x: MotionValue<number>
-  rotate: MotionValue<number>
-  opacity: MotionValue<number>
-  likeOpacity: MotionValue<number>
-  nopeOpacity: MotionValue<number>
-  handleLike: () => void
-  handlePass: () => void
-  isMatch: boolean
-}
+const mPlus1p = M_PLUS_1p({
+  subsets: ['latin'],
+  weight: ['500', '700']
+})
 
 export default function ProfileCard({
   activeUser,
@@ -49,131 +44,139 @@ export default function ProfileCard({
   handleLike,
   handlePass,
 }: ProfileCardProps) {
-  if (!activeUser) return null;
-  
+  if (!activeUser) return null
+
   return (
-    <div className="relative w-full h-auto">
+    <div className="relative w-full h-auto select-none">
       <motion.div
         style={{ x, rotate, opacity }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}
         onDragEnd={(_, info) => {
-          if (info.offset.x > 100) {
-            handleLike();
-          } else if (info.offset.x < -100) {
-            handlePass();
-          } else {
-            x.set(0); // Reset position if not enough drag
-          }
+          if (info.offset.x > 100) handleLike()
+          else if (info.offset.x < -100) handlePass()
+          else x.set(0)
         }}
         className="cursor-grab active:cursor-grabbing"
       >
-        {/* Like/Nope indicators */}
-        <motion.div 
-          className="absolute top-10 right-10 rotate-12 border-4 border-green-500 rounded-md px-6 py-2 z-10"
+        {/* LIKE / NOPE indicators */}
+        <motion.div
+          className="absolute top-10 right-10 rotate-12 border-4 border-green-500 bg-neutral-900 rounded-md px-6 py-2 z-10 shadow-lg"
           style={{ opacity: likeOpacity }}
         >
-          <span className="font-extrabold text-3xl text-green-500">LIKE</span>
+          <span className="font-extrabold text-3xl text-green-400">LIKE</span>
         </motion.div>
-        
-        <motion.div 
-          className="absolute top-10 left-10 -rotate-12 border-4 border-red-500 rounded-md px-6 py-2 z-10"
+        <motion.div
+          className="absolute top-10 left-10 -rotate-12 border-4 border-red-500 bg-neutral-900 rounded-md px-6 py-2 z-10 shadow-lg"
           style={{ opacity: nopeOpacity }}
         >
-          <span className="font-extrabold text-3xl text-red-500">NOPE</span>
+          <span className="font-extrabold text-3xl text-red-400">NOPE</span>
         </motion.div>
-        
-        <Card className="overflow-hidden max-w-xl mx-auto">
-          <div className="relative h-56 sm:h-72 bg-muted">
+
+        <Card className="overflow-hidden max-w-xl mx-auto bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl">
+          {/* Card Banner */}
+          <div className="relative h-56 sm:h-72 bg-neutral-950">
             {activeUser.avatarUrl ? (
               <img
-                src={activeUser.avatarUrl} 
+                src={activeUser.avatarUrl}
                 alt={activeUser.name}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-100 to-indigo-100">
-                <div className="text-6xl font-bold text-blue-300">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-900/50 to-indigo-900/30">
+                <div className="text-6xl font-bold text-blue-400">
                   {activeUser.name.charAt(0)}
                 </div>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4">
-              <h2 className="text-2xl font-bold text-foreground">{activeUser.name}</h2>
-              <div className="flex items-center mt-1 text-sm text-muted-foreground">
+            {/* gradient overlay for white text */}
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6">
+              <h2 className="text-2xl font-bold text-white/90" style={mPlus1p.style}>
+                {activeUser.name}
+              </h2>
+              <div className="flex items-center mt-1 text-sm text-blue-300 font-medium">
                 <MapPin className="h-4 w-4 mr-1" />
                 {activeUser.location}
               </div>
-              <div className="flex items-center mt-1 text-sm text-muted-foreground">
+              <div className="flex items-center mt-1 text-sm text-neutral-400">
                 <Briefcase className="h-4 w-4 mr-1" />
-                {activeUser.currentRole} • {activeUser.yearsExperience}+ years
+                <span className="">{activeUser.currentRole}</span>
+                {typeof activeUser.yearsExperience === "number" && (
+                  <>
+                    <span className="mx-1 text-white/15">•</span>
+                    <span>{activeUser.yearsExperience}+ yrs</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
-          
-          <CardContent className="p-4">
-            <Tabs defaultValue="about" className="mb-4">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="skills">Skills</TabsTrigger>
-                <TabsTrigger value="startup">Startup</TabsTrigger>
+
+          {/* Card Body */}
+          <CardContent className="p-6 pb-2 bg-neutral-900 text-white/90">
+            <Tabs defaultValue="about">
+              <TabsList className="grid w-full grid-cols-3 mb-4 bg-neutral-800 rounded-lg shadow">
+                <TabsTrigger value="about" className="text-white/85 data-[state=active]:bg-blue-500/40 data-[state=active]:text-white font-semibold rounded-md transition-all">
+                  About
+                </TabsTrigger>
+                <TabsTrigger value="skills" className="text-white/85 data-[state=active]:bg-blue-500/40 data-[state=active]:text-white font-semibold rounded-md transition-all">
+                  Skills
+                </TabsTrigger>
+                <TabsTrigger value="startup" className="text-white/85 data-[state=active]:bg-blue-500/40 data-[state=active]:text-white font-semibold rounded-md transition-all">
+                  Startup
+                </TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="about" className="mt-4 space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                {activeUser.description && (
-                  <div>
-                    <p className="text-sm">{activeUser.description}</p>
-                  </div>
-                )}
-                
+
+              {/* ABOUT TAB */}
+              <TabsContent value="about" className="mt-4 space-y-5 max-h-[260px] overflow-y-auto pr-2">
+                {activeUser.description &&
+                  <p className="text-neutral-300 leading-relaxed text-sm font-medium whitespace-pre-line break-words">{activeUser.description}</p>
+                }
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground mb-1 flex items-center">
-                      <Clock className="h-3 w-3 mr-1" /> Working Style
+                  <div>
+                    <span className="text-xs text-neutral-400 flex items-center mb-1">
+                      <Clock className="h-3 w-3 mr-1" />Working Style
                     </span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium break-words">
                       {WORKING_STYLE_LABELS[activeUser.workingStyle]}
                     </span>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground mb-1 flex items-center">
-                      <Users className="h-3 w-3 mr-1" /> Collaboration
+                  <div>
+                    <span className="text-xs text-neutral-400 flex items-center mb-1">
+                      <Users className="h-3 w-3 mr-1" />Collaboration
                     </span>
                     <span className="text-sm font-medium">
                       {COLLABORATION_PREF_LABELS[activeUser.collaborationPref]}
                     </span>
                   </div>
                 </div>
-                
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Personality</h3>
+                  <span className="text-xs text-neutral-400 mb-1 block font-semibold">Personality</span>
                   <div className="flex flex-wrap gap-1">
-                    {activeUser.personalityTags?.map(tag => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    )) || (
-                      <p className="text-sm text-muted-foreground">No personality tags provided</p>
-                    )}
+                    {activeUser.personalityTags?.length > 0
+                      ? activeUser.personalityTags.map(tag => (
+                          <Badge key={tag} variant="outline" className="border-blue-500/40 text-blue-400 text-xs bg-neutral-950/70">
+                            {tag}
+                          </Badge>
+                        ))
+                      : <p className="text-sm text-neutral-400">No personality tags provided</p>}
                   </div>
                 </div>
-                
                 {activeUser.pastProjects && activeUser.pastProjects.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium mb-1">Past Projects</h3>
+                    <span className="text-xs text-neutral-400 mb-1 block font-semibold">Past Projects</span>
                     <div className="space-y-2">
                       {activeUser.pastProjects.map(project => (
                         <div key={project.id || project.name} className="text-sm">
-                          <div className="font-medium">{project.name}</div>
-                          <p className="text-muted-foreground text-xs">{project.description}</p>
+                          <span className="font-semibold text-white/85">{project.name}</span>
+                          <p className="text-neutral-300 text-xs">{project.description}</p>
                           {project.link && (
-                            <a 
-                              href={project.link} 
-                              target="_blank" 
+                            <a
+                              href={project.link}
+                              target="_blank"
                               rel="noreferrer"
-                              className="text-xs text-primary flex items-center mt-1"
+                              className="inline-flex items-center text-xs text-blue-400 mt-1 hover:underline"
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View project
@@ -185,41 +188,39 @@ export default function ProfileCard({
                   </div>
                 )}
               </TabsContent>
-              
-              <TabsContent value="skills" className="mt-4 space-y-4 max-h-[300px] overflow-y-auto pr-2">
+
+              {/* SKILLS TAB */}
+              <TabsContent value="skills" className="mt-4 space-y-4 max-h-[260px] overflow-y-auto pr-2">
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Skills</h3>
+                  <span className="text-xs text-neutral-400 mb-1 block font-semibold">Skills</span>
                   <div className="flex flex-wrap gap-1">
-                    {activeUser.skills?.map(skill => (
-                      <Badge key={skill} variant="secondary" className="text-xs">
-                        {skill}
-                      </Badge>
-                    )) || (
-                      <p className="text-sm text-muted-foreground">No skills provided</p>
-                    )}
+                    {activeUser.skills?.length > 0
+                      ? activeUser.skills.map(skill => (
+                          <Badge key={skill} variant="default" className="bg-blue-600/80 text-white/90 text-xs font-semibold">
+                            {skill}
+                          </Badge>
+                        ))
+                      : <p className="text-sm text-neutral-400">No skills provided</p>}
                   </div>
                 </div>
-                
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Domains</h3>
+                  <span className="text-xs text-neutral-400 mb-1 block font-semibold">Domains</span>
                   <div className="flex flex-wrap gap-1">
-                    {activeUser.domainExpertise?.map(domain => (
-                      <Badge key={domain} className="text-xs">
-                        {domain}
-                      </Badge>
-                    )) || (
-                      <p className="text-sm text-muted-foreground">No domains provided</p>
-                    )}
+                    {activeUser.domainExpertise?.length > 0
+                      ? activeUser.domainExpertise.map(domain => (
+                          <Badge key={domain} variant="outline" className="border-blue-400/40 text-blue-300 text-xs bg-neutral-950/70">
+                            {domain}
+                          </Badge>
+                        ))
+                      : <p className="text-sm text-neutral-400">No domains provided</p>}
                   </div>
                 </div>
-                
-                {/* Safely check if rolesOpenTo exists before mapping */}
                 {activeUser.rolesOpenTo && (
                   <div>
-                    <h3 className="text-sm font-medium mb-1">Open to Roles</h3>
+                    <span className="text-xs text-neutral-400 mb-1 block font-semibold">Open to Roles</span>
                     <div className="flex flex-wrap gap-1">
                       {activeUser.rolesOpenTo.map(role => (
-                        <Badge key={role} variant="outline" className="text-xs">
+                        <Badge key={role} variant="outline" className="text-xs border-white/20 text-white/70">
                           {role}
                         </Badge>
                       ))}
@@ -227,33 +228,25 @@ export default function ProfileCard({
                   </div>
                 )}
               </TabsContent>
-              
-              <TabsContent value="startup" className="mt-4 space-y-4 max-h-[300px] overflow-y-auto pr-2">
+
+              {/* STARTUP TAB */}
+              <TabsContent value="startup" className="mt-4 space-y-4 max-h-[260px] overflow-y-auto pr-2">
                 {activeUser.startupInfo ? (
                   <>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">
-                        {STARTUP_STAGE_LABELS[activeUser.startupInfo.startupStage]}
-                      </Badge>
-                      <Badge variant="outline">
-                        {COMMITMENT_LEVEL_LABELS[activeUser.startupInfo.startupCommitment]}
-                      </Badge>
+                    <div className="flex flex-wrap gap-2 mb-1">
+                      <Badge variant="secondary" className="bg-blue-900/40 border-blue-400/30 text-blue-400 font-semibold">{STARTUP_STAGE_LABELS[activeUser.startupInfo.startupStage]}</Badge>
+                      <Badge variant="outline" className="border-blue-400/40 text-blue-400">{COMMITMENT_LEVEL_LABELS[activeUser.startupInfo.startupCommitment]}</Badge>
                     </div>
-                    
                     <div>
-                      <h3 className="text-sm font-medium mb-1">Startup Goals</h3>
-                      <p className="text-sm">{activeUser.startupInfo.startupGoals}</p>
+                      <span className="text-xs text-neutral-400 mb-1 block font-semibold">Startup Goals</span>
+                      <p className="text-neutral-300 leading-relaxed text-sm font-medium whitespace-pre-line break-words">{activeUser.startupInfo.startupGoals}</p>
                     </div>
-                    
-                    {/* Safely check if lookingFor exists before mapping */}
                     {activeUser.startupInfo.lookingFor && (
                       <div>
-                        <h3 className="text-sm font-medium mb-1">Looking For</h3>
+                        <span className="text-xs text-neutral-400 mb-1 block font-semibold">Looking For</span>
                         <div className="flex flex-wrap gap-1">
                           {activeUser.startupInfo.lookingFor.map(role => (
-                            <Badge key={role} className="text-xs">
-                              {role}
-                            </Badge>
+                            <Badge key={role} variant="secondary" className="bg-blue-950 text-blue-400 text-xs">{role}</Badge>
                           ))}
                         </div>
                       </div>
@@ -261,31 +254,27 @@ export default function ProfileCard({
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <AlertCircle className="h-10 w-10 text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">
-                      This user has not shared any startup information.
-                    </p>
+                    <AlertCircle className="h-10 w-10 text-neutral-600 mb-2" />
+                    <p className="text-neutral-600">No startup info provided.</p>
                   </div>
                 )}
               </TabsContent>
             </Tabs>
-            
-            
           </CardContent>
-          
-          <CardFooter className="flex justify-center gap-4 p-4 pt-0">
-            <Button 
-              size="icon" 
-              variant="outline" 
-              className="hover:cursor-pointer h-14 w-14 rounded-full bg-background shadow-md hover:bg-red-50 hover:text-red-500 hover:border-red-300 transition-colors"
+
+          {/* Card Footer (buttons) */}
+          <CardFooter className="flex justify-center gap-6 bg-neutral-900 pb-6 pt-2">
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-14 w-14 rounded-full bg-neutral-950 border-red-300/30 text-red-400 shadow-md hover:bg-red-900/30 hover:text-red-400 hover:border-red-400"
               onClick={handlePass}
             >
-              <X className="h-6 w-6 text-destructive" />
+              <X className="h-6 w-6" />
             </Button>
-            
-            <Button 
-              size="icon" 
-              className="hover:cursor-pointer h-14 w-14 rounded-full shadow-md hover:bg-green-600 transition-colors"
+            <Button
+              size="icon"
+              className="h-14 w-14 rounded-full bg-blue-500/40 text-white/90 font-bold shadow-md hover:bg-green-600 transition-colors"
               onClick={handleLike}
             >
               <Heart className="h-6 w-6" />
