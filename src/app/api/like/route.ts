@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
     // Check if this operation was recently performed (debounce)
     const recentlyProcessed = await redisClient.get(cacheKey);
     if (recentlyProcessed) {
-      console.log('Debounced: Like operation recently processed');
       // Parse the previously stored result to maintain consistent response
       const previousResult = JSON.parse(recentlyProcessed);
       return NextResponse.json(previousResult);

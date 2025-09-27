@@ -1,4 +1,4 @@
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
   'use client'
 
   import { zodResolver } from "@hookform/resolvers/zod"
@@ -129,7 +129,7 @@
           } catch (error) {
             // If 404, it means profile doesn't exist yet, so stay on onboarding
             // For other errors, we still allow onboarding to continue
-            console.log('User needs to complete onboarding');
+            
           } finally {
             setIsLoading(false);
           }
@@ -218,7 +218,6 @@
           },
         })
         
-        console.log('Profile created: ', response.data)
         
         // Redirect to another page or show success message
         toast.success('Profile created successfully')
@@ -232,11 +231,8 @@
         // Handle error - show message to user
         else if (axios.isAxiosError(error)) {
           // Handle specific axios errors
-          const errorMessage = error.response?.data?.message || 'Failed to create profile'
-          console.log(errorMessage);
           toast.error('An unexpected error occurred');
         } else {
-          console.log(error);
           toast.error('An unexpected error occurred');
         }
       } finally {
@@ -570,7 +566,7 @@
                       placeholder="your@email.com" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormDescription 
-                        className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                        className="border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
                         style={{ ...mPlus1p.style, fontWeight: 400 }} >
                       Your public contact email (can be different from your login email)
                     </FormDescription>

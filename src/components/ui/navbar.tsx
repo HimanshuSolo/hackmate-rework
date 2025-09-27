@@ -141,7 +141,7 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
                   showSignIn &&
                   <SignInButton>
                     <Button 
-                      variant={'outline'} 
+                    variant={'outline'} 
                       className={cn(
                         'hover:cursor-pointer transition-all duration-300 ease-out',
                         scrolled ? 'h-9 px-3 text-sm' : ''

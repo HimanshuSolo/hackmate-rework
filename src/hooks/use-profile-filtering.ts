@@ -169,8 +169,6 @@ export function useProfileFiltering(filters: FilterOptions) {
     setError(null);
     
     try {
-      console.log('Fetching with params:', paramsWithPage);
-      console.log('Viewed profiles to exclude:', viewedProfileIds);
       
       // Update last fetched params
       setLastFetchedParams(paramsWithPage);
@@ -184,7 +182,6 @@ export function useProfileFiltering(filters: FilterOptions) {
       });
       const data = response.data;
       
-      console.log('Raw users from API:', data.users.map((u: User) => u.id));
       
       // Double client-side filtering to ensure we don't show:
       // 1. Users with mutual matches
@@ -193,13 +190,9 @@ export function useProfileFiltering(filters: FilterOptions) {
         const isMatch = mutualMatchIds.includes(user.id);
         const isViewed = viewedProfileIds.includes(user.id);
         
-        if (isMatch) console.log(`Excluding user ${user.id} - already matched`);
-        if (isViewed) console.log(`Excluding user ${user.id} - already viewed`);
-        
         return !isMatch && !isViewed;
       });
       
-      console.log('Filtered users after client-side filtering:', filteredData.map((u: User) => u.id));
       
       if (resetPage || currentParams !== lastFetchedParams.split('&page=')[0]) {
         setFilteredUsers(filteredData);

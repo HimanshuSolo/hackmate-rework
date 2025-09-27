@@ -44,8 +44,6 @@ export async function getNextMatch(userId: string): Promise<string | null> {
 
 // User profile cache functions
 export async function cacheUserProfile(user: User): Promise<void> {
-
-  console.log(user);
   
   // Cache all fields needed for profile rendering
   const userCache = {
