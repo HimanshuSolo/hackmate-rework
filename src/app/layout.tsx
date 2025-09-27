@@ -21,6 +21,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hackmate",
   description: "Find the perfect co-founder for your next startup idea.",
+  twitter: {
+    card: "summary_large_image",
+    creator: "@dfordp11",
+    title: "Hackmate",
+    description: "Find the perfect co-founder for your next startup idea.",
+    images: [
+      {
+        url: "https://hackmate.app/twitter-image.jpg",  // Image URL
+        alt: "Hackmate Twitter Card Image"                // (Optional) Alt text
+      }
+    ]
+  }
 };
 
 export default function RootLayout({
