@@ -9,6 +9,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Navbar } from "@/components/ui/navbar"
 
+
+export const metadata = {
+  title: "HackMate",
+  description: "No social profiles, no fluff. Just raw experience",
+  twitter: {
+    card: "summary_large_image",
+    creator: "@dfordp11",
+    title: "HackMate",
+    description: "No social profiles, no fluff. Just raw experience",
+    image: "../../public/embedd.JPG",
+    imageAlt: "Embedd"
+  }
+}
+
 export default function LandingPage() {
   const { isSignedIn } = useUser()
   const router = useRouter()
