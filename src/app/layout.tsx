@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: "Find the perfect co-founder for your next startup idea.",
     images: [
       {
-        url: "https://hackmate.app/twitter-image.jpg",  // Image URL
+        url: "https://hackmate.app/twitter-image.JPG",  // Image URL
         alt: "Hackmate Twitter Card Image"                // (Optional) Alt text
       }
     ]
