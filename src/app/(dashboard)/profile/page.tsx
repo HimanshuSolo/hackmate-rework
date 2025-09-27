@@ -189,8 +189,8 @@ export default function Profile() {
                   </CardTitle>
                   <CardDescription className="text-blue-300 font-medium">{user.location}</CardDescription>
                   <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline" className="border-blue-400/30 text-blue-400 bg-transparent">{user.currentRole}</Badge>
-                    <Badge variant="outline" className="border-blue-400/30 text-blue-400 bg-transparent">{user.yearsExperience}+ years</Badge>
+                    <Badge variant="default">{user.currentRole}</Badge>
+                    <Badge variant="outline">{user.yearsExperience}+ years</Badge>
                   </div>
                 </div>
               </CardHeader>

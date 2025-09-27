@@ -196,7 +196,7 @@ export default function ProfileCard({
                   <div className="flex flex-wrap gap-1">
                     {activeUser.skills?.length > 0
                       ? activeUser.skills.map(skill => (
-                          <Badge key={skill} variant="default" className="bg-blue-600/80 text-white/90 text-xs font-semibold">
+                          <Badge key={skill} variant="default" className="bg-blue-600/40 text-white/90 text-xs font-semibold">
                             {skill}
                           </Badge>
                         ))
