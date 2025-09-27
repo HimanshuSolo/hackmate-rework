@@ -32,6 +32,14 @@ export const metadata: Metadata = {
         alt: "Hackmate Twitter Card Image"                // (Optional) Alt text
       }
     ]
+  },
+  openGraph: {
+    title: "Hackmate",
+    description: "Find the perfect co-founder for your next startup idea.",
+    url: "https://hackmate.app",
+    images: [
+      { url: "https://hackmate.app/twitter-image.JPG", alt: "Hackmate OG Image" }
+    ]
   }
 };
 
