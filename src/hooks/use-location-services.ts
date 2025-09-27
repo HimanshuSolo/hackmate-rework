@@ -77,8 +77,6 @@ export function useLocationServices(userId?: string) {
         throw new Error(`Error: ${response.status}`);
       }
       
-      const savedLocation = await response.json();
-      console.log("Location saved to database:", savedLocation);
       
       toast.success("Location saved", {
         description: "Your location has been saved for matching."

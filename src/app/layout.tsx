@@ -69,10 +69,8 @@ export default function RootLayout({
               theme='dark' //tweak for light/dark mode
             />
 
-            <div className='mt-11 md:mt-2'>
-              {children}
-              <Analytics/>
-            </div>
+            {children}
+            <Analytics/>
           </ThemeProvider>
         </body>
       </html>

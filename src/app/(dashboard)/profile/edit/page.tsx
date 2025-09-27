@@ -31,6 +31,7 @@ import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "sonner"
 import { uploadOnCloudinary } from '@/lib/cloudinary';
+import { M_PLUS_1p } from "next/font/google"
 
 
 // Constants for file upload
@@ -100,6 +101,13 @@ const domainOptions = [
   "EdTech", "AI/ML", "Blockchain", "IoT",
   "Mobile Apps", "Enterprise Software"
 ]
+
+
+const mPlus1p = M_PLUS_1p({
+    subsets: ['latin'],
+    weight: ['100', '300', '400', '500', '700']
+  })
+
 
 export default function ProfileEditForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -232,13 +240,12 @@ export default function ProfileEditForm() {
       formData.append('userData', JSON.stringify(userData));
       
       // Submit the form data to the API using PUT method for the specific user ID
-      const response = await axios.put(`/api/user/${user.id}`, formData, {
+      await axios.put(`/api/user/${user.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       
-      console.log('Profile updated successfully:', response.data);
       toast.success('Profile updated successfully');
       
       // Redirect to profile page
@@ -284,10 +291,10 @@ export default function ProfileEditForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-8">
+    <div className="max-w-3xl mx-auto p-6 space-y-8 bg-neutral-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Edit Your Profile</h1>
-        <p className="text-gray-500 dark:text-gray-400">
+        <h1 className="text-3xl font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Edit Your Profile</h1>
+        <p className="text-gray-500 dark:text-gray-400" style={{ ...mPlus1p.style, fontWeight: 400 }}>
           Update your profile information and preferences.
         </p>
       </div>
@@ -300,9 +307,14 @@ export default function ProfileEditForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} />
+                  <Input
+                      className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }}
+                      placeholder="Your name"
+                      {...field}
+                  />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -314,9 +326,12 @@ export default function ProfileEditForm() {
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your location" {...field} />
+                    <Input 
+                    className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                    style={{ ...mPlus1p.style, fontWeight: 400 }}
+                    placeholder="Your location" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -329,7 +344,7 @@ export default function ProfileEditForm() {
             name="avatar"
             render={({ field: { onChange, value, ...field } }) => (
               <FormItem>
-                <FormLabel>Profile Picture</FormLabel>
+                <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Profile Picture</FormLabel>
                 <FormControl>
                   <div className="flex items-center gap-4">
                     {(value && value.length > 0) ? (
@@ -358,11 +373,13 @@ export default function ProfileEditForm() {
                           setAvatarPreview(URL.createObjectURL(e.target.files[0]));
                         }
                       }}
+                      className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }}
                       {...field}
                     />
                   </div>
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 400 }}>
                   Upload a new profile picture or keep your current one
                 </FormDescription>
                 <FormMessage />
@@ -375,11 +392,12 @@ export default function ProfileEditForm() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>About You</FormLabel>
+                <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>About You</FormLabel>
                 <FormControl>
                   <Textarea
+                    className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500 min-h-[100px]"
+                    style={{ ...mPlus1p.style, fontWeight: 400 }}
                     placeholder="Tell us about yourself, your background, and what you're looking for..."
-                    className="min-h-[100px]"
                     {...field}
                   />
                 </FormControl>
@@ -394,9 +412,12 @@ export default function ProfileEditForm() {
               name="currentRole"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Role</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Current Role</FormLabel>
                   <FormControl>
-                    <Input placeholder="Software Engineer" {...field} />
+                    <Input 
+                    className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                    style={{ ...mPlus1p.style, fontWeight: 400 }}
+                    placeholder="Software Engineer" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -408,9 +429,11 @@ export default function ProfileEditForm() {
               name="yearsExperience"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Years of Experience</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Years of Experience</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
+                      className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} 
                       type="number" 
                       {...field} 
                       onChange={e => field.onChange(parseInt(e.target.value) || 0)}
@@ -426,11 +449,14 @@ export default function ProfileEditForm() {
               name="workingStyle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Working Style</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Working Style</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select working style" />
+                        <SelectValue 
+                        className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                        style={{ ...mPlus1p.style, fontWeight: 400 }}   
+                        placeholder="Select working style" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -450,11 +476,14 @@ export default function ProfileEditForm() {
               name="collaborationPref"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Collaboration Preference</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Collaboration Preference</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select preference" />
+                        <SelectValue 
+                        className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                        style={{ ...mPlus1p.style, fontWeight: 400 }}   
+                        placeholder="Select preference" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -476,21 +505,25 @@ export default function ProfileEditForm() {
               name="personalityTags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Personality Traits</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Personality Traits</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 p-4 border rounded-md">
                       {personalityOptions.map((tag) => (
-                        <Badge
+                          <Badge
                           key={tag}
                           variant={field.value.includes(tag) ? "default" : "outline"}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${
+                            field.value.includes(tag)
+                              ? 'bg-blue-500/40 text-white'
+                              : 'border-white/30 text-white/55'
+                          } transition-all duration-200`}
                           onClick={() => {
-                            const newValue = field.value.includes(tag)
-                              ? field.value.filter((t) => t !== tag)
-                              : [...field.value, tag]
-                            field.onChange(newValue)
-                          }}
-                        >
+                              const newValue = field.value.includes(tag)
+                                ? field.value.filter((t) => t !== tag)
+                                : [...field.value, tag]
+                              field.onChange(newValue)
+                            }}
+                        > 
                           {tag}
                         </Badge>
                       ))}
@@ -506,14 +539,18 @@ export default function ProfileEditForm() {
               name="domainExpertise"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domain Expertise</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Domain Expertise</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 p-4 border rounded-md">
                       {domainOptions.map((tag) => (
                         <Badge
                           key={tag}
                           variant={field.value.includes(tag) ? "default" : "outline"}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${
+                            field.value.includes(tag)
+                              ? 'bg-blue-500/40 text-white'
+                              : 'border-white/30 text-white/55'
+                          } transition-all duration-200`}
                           onClick={() => {
                             const newValue = field.value.includes(tag)
                               ? field.value.filter((t) => t !== tag)
@@ -536,14 +573,18 @@ export default function ProfileEditForm() {
               name="skills"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Skills</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Skills</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 p-4 border rounded-md">
                       {skillOptions.map((skill) => (
                         <Badge
                           key={skill}
                           variant={field.value.includes(skill) ? "default" : "outline"}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${
+                            field.value.includes(skill)
+                              ? 'bg-blue-500/40 text-white'
+                              : 'border-white/30 text-white/55'
+                          } transition-all duration-200`}
                           onClick={() => {
                             const newValue = field.value.includes(skill)
                               ? field.value.filter((s) => s !== skill)
@@ -563,18 +604,23 @@ export default function ProfileEditForm() {
           </div>
 
           <div className="space-y-6 border rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-medium">Contact Information</h3>
+            <h3 className="text-lg font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Contact Information</h3>
             
             <FormField
               control={form.control}
               name="contactInfo.email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Email (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your@email.com" {...field} value={field.value || ''} />
+                    <Input 
+                    className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                    style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                    type="email" placeholder="your@email.com" {...field} value={field.value || ''} />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription
+                      className="border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} >
                     Your public contact email (can be different from your login email)
                   </FormDescription>
                   <FormMessage />
@@ -588,9 +634,12 @@ export default function ProfileEditForm() {
                 name="contactInfo.twitterUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Twitter Profile (Optional)</FormLabel>
+                    <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Twitter Profile (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://twitter.com/yourusername" {...field} value={field.value || ''} />
+                      <Input 
+                      className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                      placeholder="https://twitter.com/yourusername" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -602,7 +651,7 @@ export default function ProfileEditForm() {
                 name="contactInfo.linkedinUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>LinkedIn Profile (Optional)</FormLabel>
+                    <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>LinkedIn Profile (Optional)</FormLabel>
                     <FormControl>
                       <Input placeholder="https://linkedin.com/in/yourusername" {...field} value={field.value || ''} />
                     </FormControl>
@@ -616,11 +665,16 @@ export default function ProfileEditForm() {
                 name="contactInfo.scheduleUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Scheduling Link (Optional)</FormLabel>
+                    <FormLabel className="font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Scheduling Link (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://calendly.com/yourusername" {...field} value={field.value || ''} />
+                      <Input 
+                       className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                      placeholder="https://calendly.com/yourusername" {...field} value={field.value || ''} />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription
+                    className="border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} >
                       Link to your Calendly, Cal.com or other scheduling service
                     </FormDescription>
                     <FormMessage />
@@ -632,15 +686,15 @@ export default function ProfileEditForm() {
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <FormLabel>Past Projects</FormLabel>
+              <FormLabel className="text-lg font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Past Projects</FormLabel>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => append({ name: '', description: '', link: '' })}
-                className="hover:cursor-pointer"
+                 className="font-medium hover:cursor-pointer" style={{ ...mPlus1p.style, fontWeight: 700 }}
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 mr-1" />
                 Add Project
               </Button>
             </div>
@@ -653,9 +707,12 @@ export default function ProfileEditForm() {
                     name={`pastProjects.${index}.name`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Name</FormLabel>
+                        <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Project Name</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input 
+                            className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                            style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                            {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -667,9 +724,12 @@ export default function ProfileEditForm() {
                     name={`pastProjects.${index}.description`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Description</FormLabel>
                         <FormControl>
-                          <Textarea {...field} />
+                          <Textarea 
+                            className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                            style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                            {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -681,9 +741,12 @@ export default function ProfileEditForm() {
                     name={`pastProjects.${index}.link`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Link</FormLabel>
+                        <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Project Link</FormLabel>
                         <FormControl>
-                          <Input {...field} type="url" placeholder="https://..." />
+                          <Input 
+                          className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                          style={{ ...mPlus1p.style, fontWeight: 400 }} 
+                          {...field} type="url" placeholder="https://..." />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -704,18 +767,21 @@ export default function ProfileEditForm() {
           </div>
 
           <div className="space-y-6 border rounded-lg p-6">
-            <h3 className="text-lg font-medium">Startup Information</h3>
+            <h3 className="text-lg font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Startup Information</h3>
             
             <FormField
               control={form.control}
               name="startupInfo.stage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Startup Stage</FormLabel>
+                  <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Startup Stage</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select stage" />
+                        <SelectValue 
+                        className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500"
+                          style={{ ...mPlus1p.style, fontWeight: 400 }}   
+                        placeholder="Select stage" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -735,11 +801,12 @@ export default function ProfileEditForm() {
               name="startupInfo.goals"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Startup Goals</FormLabel>
+                  <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Startup Goals</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe your startup goals and vision..."
-                      className="min-h-[100px]"
+                      className="bg-neutral-950 border-gray-700 text-white/85 placeholder:text-gray-500 focus:ring-blue-500 min-h-[100px]"
+                      style={{ ...mPlus1p.style, fontWeight: 400 }} 
                       {...field}
                     />
                   </FormControl>
@@ -753,7 +820,7 @@ export default function ProfileEditForm() {
               name="startupInfo.commitment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Commitment Level</FormLabel>
+                  <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Commitment Level</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -772,19 +839,23 @@ export default function ProfileEditForm() {
               )}
             />
 
-            {/* <FormField
+            <FormField
               control={form.control}
               name="startupInfo.lookingFor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Looking For</FormLabel>
+                  <FormLabel className="font-medium" style={{ ...mPlus1p.style, fontWeight: 700 }}>Looking For</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2 p-4 border rounded-md">
                       {skillOptions.map((skill) => (
                         <Badge
                           key={skill}
                           variant={field.value?.includes(skill) ? "default" : "outline"}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${
+                              field.value?.includes(skill)
+                                ? 'bg-blue-500/40 text-white'
+                              : 'border-white/30 text-white/55'
+                          } transition-all duration-200`}
                           onClick={() => {
                             const newValue = field.value?.includes(skill)
                               ? field.value.filter((s) => s !== skill)
@@ -800,7 +871,7 @@ export default function ProfileEditForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            /> 
           </div>
 
           <div className="flex space-x-4">

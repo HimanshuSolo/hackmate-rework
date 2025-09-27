@@ -1,6 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import FilterPanel from './filter-panel'
 import { FilterOptions } from '../../types'
+import { M_PLUS_1p } from 'next/font/google'
 
 interface FilterSidebarProps {
   filters: FilterOptions
@@ -11,6 +12,11 @@ interface FilterSidebarProps {
   handleFilterChange: (newFilters: Partial<FilterOptions>) => void
 }
 
+const mPlus1p = M_PLUS_1p({
+  subsets: ['latin'],
+  weight: ['100', '300', '400', '500', '700']
+})
+
 export default function FilterSidebar({
   filters,
   userCoordinates,
@@ -20,10 +26,10 @@ export default function FilterSidebar({
   handleFilterChange
 }: FilterSidebarProps) {
   return (
-    <div className="w-1/3 bg-card rounded-lg border p-4">
-      <h2 className="text-2xl font-semibold mb-6">Filters</h2>
-      <ScrollArea className="h-[calc(100vh-300px)] p-3">
-        <FilterPanel 
+    <div  className={`${mPlus1p.className} w-[500px] bg-neutral-950 border border-neutral-800 rounded-2xl shadow-lg p-5`}>
+      <h2 className="text-2xl font-bold text-white/90 mb-6" style={{ fontWeight: 700 }}>Filters</h2>
+      <ScrollArea className="h-[calc(100vh-210px)] bg-transparent rounded-lg">
+        <FilterPanel
           filters={filters}
           userCoordinates={userCoordinates}
           isSavingLocation={isSavingLocation}

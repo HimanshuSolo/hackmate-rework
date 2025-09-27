@@ -1,0 +1,136 @@
+import { TestimonialsColumn } from "@/components/ui/testimonials-columns-1";
+import { motion } from "motion/react";
+import { TestimonialItem, balanceTestimonialTypes } from "@/lib/testimonial-utils";
+import { M_PLUS_1p } from "next/font/google";
+
+const mPlus1p = M_PLUS_1p({
+    subsets: ['latin'],
+    weight: ['500']
+})
+
+// Testimonials data - Replace with your real testimonials
+const testimonials: TestimonialItem[] = [
+    // {
+    //     type: "custom",
+    //     id: "custom-1", 
+    //     text: "Your testimonial text here...",
+    //     image: "/",
+    //     name: "User Name",
+    //     role: "User Role",
+    // },
+    {
+        type: "twitter",
+        id: "twitter-1",
+        tweetId: "1970102716899696646",
+    },
+    {
+        type: "twitter",
+        id: "twitter-2",
+        tweetId: "1970089201128653270",
+    },
+    {
+        type: "twitter",
+        id: "twitter-3",
+        tweetId: "1970167197051052042",
+    },
+    {
+        type: "twitter",
+        id: "twitter-4",
+        tweetId: "1970165220258509231",
+    },
+    {
+        type: "peerlist",
+        id: "peerlist-1",
+        author: {
+            name: "Krishna Kant",
+            username: "krixn",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UHGNL96GAJ6EE781M6DJNPNNQBRM/hgnl96gaj6ee781m6djnpnnqbrm-2580-profile.webp",
+            title: "Front End Dev",
+        },
+        content: "This is so coool and has great usecase",
+    },
+    {
+        type: "peerlist",
+        id: "peerlist-2",
+        author: {
+            name: "Rohan Sharma",
+            username: "rohansrma",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UH6AJB6DDEJONPO2RGQ7PQPQAOOR/h6ajb6ddejonpo2rgq7pqpqaoor-profile",
+            title: "Web Developer || UI/UX designer",
+        },
+        content: "Let's see who's my match!",
+    },
+    {
+        type: "peerlist",
+        id: "peerlist-3",
+        author: {
+            name: "Naman Jain",
+            username: "namanjain152003",
+            avatar: "https://dqy38fnwh4fqs.cloudfront.net/UHR8D66P8R9EQERFDEPDDKQG6OAN/hr8d66p8r9eqerfdepddkqg6oan-5583-profile.webp",
+            title: "Developer",
+        },
+        content: "Great work and solving the real world problem",
+    },
+    {
+        type: "producthunt",
+        id: "ph-1", 
+        author: {
+            name: "Bogdan Ivtsjenko",
+            username: "bogdan_ivtsjenko1",
+            avatar: "https://ph-avatars.imgix.net/6254640/0f0c3c29-8fdd-44d2-9b38-44ce44eafa06.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+            title: "Software Engineer",
+            isMaker: false,
+        },
+        content: "This looks really cool! The real, time collaboration feature is impressive, especially how it can help with instant feedback.",
+        badge: "daily_winner",
+    },
+];
+
+// Use balanced distribution to ensure good mix across columns
+const [firstColumn, secondColumn, thirdColumn] = testimonials.length > 0 
+    ? balanceTestimonialTypes(testimonials, 3) 
+    : [[], [], []];
+
+const Testimonials = () => {
+    return (
+        <section className="my-12 sm:my-16 md:my-20 relative">
+        {/* Dark blurred glass background */}
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-xl border border-gray-800/20 rounded-2xl sm:rounded-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/10 via-black/30 to-gray-900/10"></div>
+        
+        <div className="container z-10 mx-auto relative py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+            <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true }}
+            className="flex flex-col items-center justify-center max-w-2xl mx-auto"
+            >
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter mt-3 sm:mt-5 text-white text-center" style={{ ...mPlus1p.style, fontWeight: 600 }}>
+                What our community says
+            </h2>
+            <p className="text-center mt-4 sm:mt-5 text-gray-300 text-base sm:text-lg max-w-lg">
+                See what developers and makers are saying about Hackmate across different platforms.
+            </p>
+            </motion.div>
+
+            {testimonials.length > 0 ? (
+            <div className="flex justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[500px] sm:max-h-[600px] md:max-h-[740px] overflow-hidden">
+                <TestimonialsColumn testimonials={firstColumn} duration={15} />
+                <TestimonialsColumn testimonials={secondColumn} className="hidden sm:block" duration={19} />
+                <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
+            </div>
+            ) : (
+            <div className="flex justify-center mt-8 sm:mt-10">
+                <div className="text-center text-gray-400 p-6 sm:p-8">
+                <p className="text-base sm:text-lg">Add your testimonials to showcase community feedback.</p>
+                <p className="text-sm sm:text-base mt-2">Edit the testimonials array in testimonials.tsx to get started.</p>
+                </div>
+            </div>
+            )}
+        </div>
+        </section>
+    );
+};
+
+export { Testimonials };
