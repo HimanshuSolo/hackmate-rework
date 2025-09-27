@@ -21,6 +21,26 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hackmate",
   description: "Find the perfect co-founder for your next startup idea.",
+  twitter: {
+    card: "summary_large_image",
+    creator: "@dfordp11",
+    title: "Hackmate",
+    description: "Find the perfect co-founder for your next startup idea.",
+    images: [
+      {
+        url: "https://hackmate.app/twitter-image.JPG",  // Image URL
+        alt: "Hackmate Twitter Card Image"                // (Optional) Alt text
+      }
+    ]
+  },
+  openGraph: {
+    title: "Hackmate",
+    description: "Find the perfect co-founder for your next startup idea.",
+    url: "https://hackmate.app",
+    images: [
+      { url: "https://hackmate.app/twitter-image.JPG", alt: "Hackmate OG Image" }
+    ]
+  }
 };
 
 export default function RootLayout({
@@ -49,10 +69,8 @@ export default function RootLayout({
               theme='dark' //tweak for light/dark mode
             />
 
-            <div className='mt-11 md:mt-2'>
-              {children}
-              <Analytics/>
-            </div>
+            {children}
+            <Analytics/>
           </ThemeProvider>
         </body>
       </html>

@@ -1,17 +1,40 @@
 'use client'
 
+import { useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles, Code, Users, Rocket, MessageSquare, Laptop, Briefcase } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Zap} from "lucide-react"
 import { Navbar } from "@/components/ui/navbar"
+import Spline from '@splinetool/react-spline'
+import { M_PLUS_1p } from "next/font/google"
+import FixedBadges from "@/components/ui/fixed-badges"
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import HowItWorks from "@/components/ui/how-it-works"
+import Link from "next/link"
+import { Chakra_Petch } from 'next/font/google'
+import { Testimonials } from "@/components/ui/testimonials"
+import Image from "next/image"
+
+const mPlus1p = M_PLUS_1p({
+  subsets: ['latin'],
+  weight: ['100', '300', '400', '500', '700']
+})
+
+  
+const chakraPetch = Chakra_Petch({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700']
+})
+
 
 export default function LandingPage() {
   const { isSignedIn } = useUser()
   const router = useRouter()
+  
+  // Scroll to top on page load/refresh
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   
   // Handle CTA button click
   const handleGetStarted = () => {
@@ -21,212 +44,122 @@ export default function LandingPage() {
       router.push('/sign-in')
     }
   }
+
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pt-11 md:pt-2 bg-black">
       <Navbar />
       
+      {/* Fixed badges for landing page only */}
+      <FixedBadges />
+      
       {/* Hero Section */}
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-12 md:py-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+      <main>
+        <div className="container mx-auto px-6 pt-10 pb-6 md:py-2 relative">
+          {/* Background GIF for Mobile Screens */}
+          <div className="md:hidden absolute inset-0 z-0 opacity-35 flex items-center justify-center">
+            <div className="w-[300px] h-[300px] sm:w-[350px] sm:h-[350px] relative">
+              <Image
+                src="https://res.cloudinary.com/dlv779rl7/image/upload/v1758904247/Adobe_Express_-_Untitled_video_-_Made_with_Clipchamp_d7jpf2.gif"
+                alt="3D Animation"
+                fill
+                style={{
+                  objectFit: "contain",
+                  pointerEvents: "none",
+                }}
+                priority
+                unoptimized // Allows GIF animation
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+            <div className="space-y-4">
               <div>
-                <h1 className="text-3xl md:text-6xl font-extrabold tracking-tight">
+                <h1 className="text-3xl md:text-6xl text-white/80 tracking-tight" style={{ ...mPlus1p.style, fontWeight: 600 }}>
                   <span className="text-primary block">Find Your Perfect</span>
-                  <span className="block">Co-Founder Match</span>
+                  <span className="block">Co-Founder</span>
                 </h1>
-                <p className="mt-6 text-lg text-gray-600 dark:text-gray-400">
+                <p className="mt-4 text-neutral-600 dark:text-neutral-300/80" style={{ ...mPlus1p.style, fontWeight: 400 }}>
                   A swipe-based platform connecting founders and builders with their ideal collaborators. 
                   No social profiles, no fluff. Just raw experience, aligned intent, and mutual interest.
                 </p>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg"
-                  onClick={handleGetStarted}
-                  className="px-8 py-6 text-lg flex items-center gap-2 hover:cursor-pointer"
-                >
-                  Get Started
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-                
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => router.push('/about')}
-                  className="px-8 py-6 text-lg hover:cursor-pointer"
-                >
-                  Learn More
-                </Button>
-              </div>
+              <InteractiveHoverButton onClick={handleGetStarted}>
+                Get Started
+              </InteractiveHoverButton>
             </div>
             
-            {/* Profile Card - Hidden on Mobile */}
-            <div className="hidden md:block">
-              <Card className="overflow-hidden shadow-xl border-2 border-primary/10 transform hover:-translate-y-1 transition-all duration-300">
-                <CardHeader className="p-0 bg-gradient-to-r from-primary/10 to-primary/5">
-                  <div className="p-6 flex items-start gap-4">
-                    <Avatar className="h-16 w-16 border-2 border-white shadow-md">
-                      <AvatarImage src="/demo-avatar.jpg" alt="Profile" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-xl font-semibold">Jane Developer</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">San Francisco, CA</p>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant="secondary">Full-Stack Developer</Badge>
-                        <Badge variant="outline">5+ years</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">About</h4>
-                    <p className="text-sm">Passionate about building user-focused products with clean, maintainable code. Looking to join an early-stage startup with ambitious goals.</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Skills</h4>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>React</Badge>
-                      <Badge>Node.js</Badge>
-                      <Badge>TypeScript</Badge>
-                      <Badge>UI/UX</Badge>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Domains</h4>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">SaaS</Badge>
-                      <Badge variant="secondary">FinTech</Badge>
-                      <Badge variant="secondary">EdTech</Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-2">
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm">
-                        <span className="font-medium">Working Style:</span> Flexible
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">Prefers:</span> Remote
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-        
-        {/* Features Section */}
-        <div className="bg-gray-50 dark:bg-gray-900/50 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">How Hackmate Works</h2>
-            <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12">
-              Our platform makes it easy to find the perfect match for your next project or startup.
-            </p>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              <FeatureCard 
-                icon={<Users className="h-6 w-6 text-primary" />}
-                title="Create your profile" 
-                description="Showcase your skills, experience, and what you're looking to build. Our profiles focus on what matters - your abilities and goals." 
+            <div className="hidden md:block relative">
+              <Spline
+              style={{
+                width: "100%",
+                height: "100vh",
+                pointerEvents: "auto",
+              }}
+              
+              scene="https://prod.spline.design/4IbP1LKZzqcXufXQ/scene.splinecode"
               />
-              <FeatureCard 
-                icon={<Rocket className="h-6 w-6 text-primary" />}
-                title="Swipe to match" 
-                description="Browse potential collaborators and express interest with a simple swipe. Our algorithm helps find people who complement your skillset." 
-              />
-              <FeatureCard 
-                icon={<MessageSquare className="h-6 w-6 text-primary" />}
-                title="Connect & build" 
-                description="When there's mutual interest, start a conversation and begin collaborating on your next big idea." 
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Additional Benefits */}
-        <div className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Why Choose Hackmate</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <BenefitCard 
-                icon={<Code className="h-8 w-8 text-primary" />}
-                title="Skill-First Matching" 
-                description="Our platform prioritizes your skills and experience over your network or background. Find people who complement your abilities." 
-              />
-              <BenefitCard 
-                icon={<Laptop className="h-8 w-8 text-primary" />}
-                title="Remote-Friendly" 
-                description="Whether you prefer working remotely or in-person, find collaborators that match your preferred working style." 
-              />
-              <BenefitCard 
-                icon={<Briefcase className="h-8 w-8 text-primary" />}
-                title="For Every Stage" 
-                description="From idea stage to scaling up, connect with people at the right stage for your project or startup." 
-              />
-              <BenefitCard 
-                icon={<Sparkles className="h-8 w-8 text-primary" />}
-                title="Build Together" 
-                description="Our platform is designed to help you build meaningful connections that lead to successful collaborations." 
+              <div 
+              className="absolute pointer-events-none z-50"
+              style={{
+                backgroundColor: '#000000',
+                bottom: '15px',
+                right: '15px',
+                width: '200px',
+                height: '60px'
+              }}
               />
             </div>
           </div>
         </div>
       </main>
-      
+
+      {/* How it works */}
+      <HowItWorks />
+
+      <Testimonials />
+
       {/* Footer */}
       <footer className="py-8 border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <span className="font-bold">Hackmate</span>
+          <div className="flex flex-col items-start">
+            {/* Logo */}
+            <Link href="/" className="flex items-center mb-3">
+              <Zap className="text-blue-500/40 transition-all duration-300 ease-out mr-1" />
+              <div className={`${chakraPetch.className} text-lg md:text-xl text-white/85 select-none whitespace-nowrap`}>
+                HackMate
+              </div>
+            </Link>
+            {/* Made by */}
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              Made by{' '}
+              <a
+                href="https://dilpreetgrover.is-a.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-500"
+              >
+                Dilpreet Grover
+              </a>
+              {' '}and{' '}
+              <a
+                href="https://www.anantx.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-500"
+              >
+                Anant Kumar Sharma
+              </a>
             </div>
-            
+            {/* All rights reserved */}
             <div className="text-sm text-gray-500 dark:text-gray-400">
               &copy; {new Date().getFullYear()} Hackmate. All rights reserved.
             </div>
           </div>
         </div>
       </footer>
-    </div>
-  )
-}
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-6 transform hover:scale-105 transition-all duration-300">
-      <div className="flex items-center mb-4">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-          {icon}
-        </div>
-      </div>
-      <h3 className="text-lg font-semibold mb-3">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{description}</p>
-    </div>
-  )
-}
-
-function BenefitCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="flex gap-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-      <div className="shrink-0">
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <div>
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-gray-600 dark:text-gray-400">{description}</p>
-      </div>
     </div>
   )
 }

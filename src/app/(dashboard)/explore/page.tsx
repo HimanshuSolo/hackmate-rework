@@ -27,7 +27,7 @@ import { useRouter } from 'next/navigation'
 export default function Explore() {
   const { user: clerkUser } = useUser()
   const router = useRouter();
-  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const isDesktop = useMediaQuery('(min-width: 1280px)')
   const [filterOpen, setFilterOpen] = useState(false)
   const [matchDialogOpen, setMatchDialogOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
@@ -42,7 +42,6 @@ export default function Explore() {
       setIsLoadingUser(true);
       try {
         const response = await axios.get(`/api/user/${clerkUser.id}`);
-        console.log("CLERK "+clerkUser.id);
         
         setCurrentUser(response.data);
       } catch (error) {
@@ -55,7 +54,6 @@ export default function Explore() {
         }
         else{
           toast.error('Error while fetching user data');
-          console.log('Error while fetching user data:', error);
         }
       } finally {
         setIsLoadingUser(false);

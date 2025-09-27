@@ -15,6 +15,13 @@ import {
   DEFAULT_FILTERS,
 } from '../../constants'
 import { fetchAvailableSkillsAndDomains } from '@/lib/filter-utils'
+import { M_PLUS_1p } from "next/font/google"
+
+
+const mPlus1p = M_PLUS_1p({
+  subsets: ['latin'],
+  weight: ['100', '300', '400', '500', '700']
+})
 
 interface FilterPanelProps {
   filters: FilterOptions
@@ -97,158 +104,77 @@ export default function FilterPanel({
   }
   
   return (
-    <div className="space-y-7">
-      {/* <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="use-profile-prefs"
-            checked={filters.preferencesFromProfile}
-            onCheckedChange={(checked) => {
-              handleFilterChange({ preferencesFromProfile: checked })
-              // Reset filters if turning on profile preferences
-              if (checked) {
-                setTimeout(() => {
-                  handleFilterChange({
-                    workingStyles: [DEFAULT_USER_PREFERENCES.workingStyle],
-                    collaborationPrefs: [DEFAULT_USER_PREFERENCES.collaborationPref],
-                    skills: DEFAULT_USER_PREFERENCES.skills.slice(0, 1),
-                    domains: DEFAULT_USER_PREFERENCES.domainExpertise.slice(0, 1),
-                    location: DEFAULT_USER_PREFERENCES.location,
-                    maxDistance: DEFAULT_USER_PREFERENCES.maxDistance,
-                    enableLocationBasedMatching: DEFAULT_USER_PREFERENCES.enableLocationBasedMatching,
-                  })
-                }, 500)
-              }
-            }}
-          />
-          <Label htmlFor="use-profile-prefs" className="cursor-pointer">
-            Use my profile preferences
-          </Label>
-        </div>
-        {isLoadingPreferences && <Loader2 className="h-4 w-4 animate-spin" />}
-      </div> */}
-      
-      {/* Location Filter */}
-      {/* <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium">Location</h3>
-          <div className="flex items-center space-x-2">
-            <Switch 
-              id="enable-location"
-              checked={filters.enableLocationBasedMatching}
-              onCheckedChange={(checked) => {
-                handleFilterChange({ enableLocationBasedMatching: checked })
-                if (checked && !locationPermissionRequested) {
-                  requestLocationPermission()
-                }
-              }}
-            />
-            <Label htmlFor="enable-location" className="cursor-pointer">
-              Enable location
-            </Label>
-          </div>
-        </div>
-        
-        {filters.enableLocationBasedMatching && userCoordinates && (
-          <div className="mt-2 p-3 bg-muted/30 rounded-md text-xs">
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-medium">Your location data:</span>
-              {isSavingLocation && <Loader2 className="h-3 w-3 animate-spin" />}
-            </div>
-            
-            <div className="space-y-1 text-muted-foreground">
-              <p className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" /> 
-                Coordinates: {userCoordinates.latitude.toFixed(5)}, {userCoordinates.longitude.toFixed(5)}
-              </p>
-              <p className="flex items-center gap-1">
-                <Badge variant="outline" className="text-[10px] h-4">
-                  {userCoordinates.geohash}
-                </Badge>
-                <span className="text-[10px]">(geohash)</span>
-              </p>
-              <p className="mt-2 text-[10px] border-t border-border/50 pt-1">
-                Finding users within approximately {filters.maxDistance} miles of your location
-                <Slider
-                  value={[filters.maxDistance || 50]}
-                  min={5}
-                  max={500}
-                  step={5}
-                  onValueChange={(value) => handleFilterChange({ maxDistance: value[0] })}
-                />
-              </p>
-            </div>
-          </div>
-        )}
-      </div> */}
-      
+    <div className={`space-y-8 ${mPlus1p.className}`}>
       {/* Experience Range */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Years of Experience</h3>
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Years of Experience</h3>
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-sm text-muted-foreground">{filters.experienceRange[0]} years</span>
-            <span className="text-sm text-muted-foreground">{filters.experienceRange[1]} years</span>
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>{filters.experienceRange[0]} yr</span>
+            <span>{filters.experienceRange[1]} yr</span>
           </div>
           <Slider
             value={filters.experienceRange}
             min={0}
             max={15}
             step={1}
-            onValueChange={(value) => handleFilterChange({ experienceRange: [value[0], value[1]] })}
+            onValueChange={value => handleFilterChange({ experienceRange: [value[0], value[1]] })}
+            className="accent-blue-500"
           />
         </div>
       </div>
-      
+
       {/* Working Style */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Working Style</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Working Style</h3>
+        <div className="grid grid-cols-2 gap-3">
           {Object.entries(WORKING_STYLE_LABELS).map(([value, label]) => (
             <div key={value} className="flex items-center space-x-2">
-              <Checkbox 
+              <Checkbox
                 id={`style-${value}`}
                 checked={filters.workingStyles.includes(value as WorkingStyle)}
                 onCheckedChange={() => toggleWorkingStyle(value as WorkingStyle)}
+                className="border-neutral-700 bg-neutral-900 checked:bg-blue-500/40"
               />
-              <Label htmlFor={`style-${value}`}>{label}</Label>
+              <Label htmlFor={`style-${value}`} className="text-sm text-white/75">{label}</Label>
             </div>
           ))}
         </div>
       </div>
-      
+
       {/* Collaboration Preference */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Collaboration Preference</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Collaboration Preference</h3>
+        <div className="grid grid-cols-2 gap-3">
           {Object.entries(COLLABORATION_PREF_LABELS).map(([value, label]) => (
             <div key={value} className="flex items-center space-x-2">
-              <Checkbox 
+              <Checkbox
                 id={`collab-${value}`}
                 checked={filters.collaborationPrefs.includes(value as CollaborationPref)}
                 onCheckedChange={() => toggleCollaborationPref(value as CollaborationPref)}
+                className="border-neutral-700 bg-neutral-900 checked:bg-blue-500/40"
               />
-              <Label htmlFor={`collab-${value}`}>{label}</Label>
+              <Label htmlFor={`collab-${value}`} className="text-sm text-white/75">{label}</Label>
             </div>
           ))}
         </div>
       </div>
-      
+
       {/* Skills */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Skills</h3>
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Skills</h3>
         {isLoading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin mr-2" />
-            <span>Loading skills...</span>
+          <div className="flex items-center justify-center">
+            <Loader2 className="h-5 w-5 animate-spin mr-2 text-blue-500/80" />
+            <span className="text-white/80">Loading skills...</span>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {allSkills.map(skill => (
-              <Badge 
+              <Badge
                 key={skill}
                 variant={filters.skills.includes(skill) ? "default" : "outline"}
-                className="cursor-pointer"
+                className={`cursor-pointer ${filters.skills.includes(skill) ? 'bg-blue-500/40 text-white' : 'border-white/20 text-white/65'} transition-all`}
                 onClick={() => toggleSkill(skill)}
               >
                 {skill}
@@ -257,22 +183,22 @@ export default function FilterPanel({
           </div>
         )}
       </div>
-      
+
       {/* Domains */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Domain Expertise</h3>
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Domain Expertise</h3>
         {isLoading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin mr-2" />
-            <span>Loading domains...</span>
+          <div className="flex items-center justify-center">
+            <Loader2 className="h-5 w-5 animate-spin mr-2 text-blue-500/80" />
+            <span className="text-white/80">Loading domains...</span>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {allDomains.map(domain => (
-              <Badge 
+              <Badge
                 key={domain}
                 variant={filters.domains.includes(domain) ? "default" : "outline"}
-                className="cursor-pointer"
+                className={`cursor-pointer ${filters.domains.includes(domain) ? 'bg-blue-500/40 text-white' : 'border-white/20 text-white/65'} transition-all`}
                 onClick={() => toggleDomain(domain)}
               >
                 {domain}
@@ -281,41 +207,40 @@ export default function FilterPanel({
           </div>
         )}
       </div>
-      
+
       {/* Startup Stage */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Startup Stage</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <div>
+        <h3 className="text-base font-semibold text-white/85 mb-2">Startup Stage</h3>
+        <div className="grid grid-cols-2 gap-3">
           {Object.entries(STARTUP_STAGE_LABELS).map(([value, label]) => (
             <div key={value} className="flex items-center space-x-2">
-              <Checkbox 
+              <Checkbox
                 id={`stage-${value}`}
                 checked={filters.startupStages?.includes(value as StartupStage)}
                 onCheckedChange={() => toggleStartupStage(value as StartupStage)}
+                className="border-neutral-700 bg-neutral-900 checked:bg-blue-500/40"
               />
-              <Label htmlFor={`stage-${value}`}>{label}</Label>
+              <Label htmlFor={`stage-${value}`} className="text-sm text-white/75">{label}</Label>
             </div>
           ))}
         </div>
       </div>
-      
-      <div className="flex items-center justify-between [&>*]:hover:cursor-pointer">
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            handleFilterChange(DEFAULT_FILTERS)
-          }}
-          className="hover:cursor-pointer"
+
+      {/* Actions */}
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          onClick={() => handleFilterChange(DEFAULT_FILTERS)}
+          className="border-white/20 text-white/85 hover:bg-blue-500/20 hover:border-blue-400/40 transition-all"
         >
           Reset Filters
         </Button>
-        {/* {!isDesktop && onClose && ( */}
-          <Button onClick={onClose}
-                  className="hover:cursor-pointer"
-          >
-            Apply Filters
-          </Button>
-        {/* )} */}
+        <Button
+          onClick={onClose}
+          className="bg-blue-500/40 text-white rounded-md hover:bg-blue-700/70 transition-all"
+        >
+          Apply Filters
+        </Button>
       </div>
     </div>
   )
