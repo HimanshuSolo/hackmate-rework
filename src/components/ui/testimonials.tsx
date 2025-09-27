@@ -123,7 +123,7 @@ const Testimonials = () => {
             className="flex flex-col items-center justify-center max-w-2xl mx-auto"
             >
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter mt-3 sm:mt-5 text-white text-center" style={{ ...mPlus1p.style, fontWeight: 600 }}>
-                What our community says
+                What our users say
             </h2>
             <p className="text-center mt-4 sm:mt-5 text-gray-300 text-base sm:text-lg max-w-lg">
                 See what developers and makers are saying about Hackmate across different platforms.
