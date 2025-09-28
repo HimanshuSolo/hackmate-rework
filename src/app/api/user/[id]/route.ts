@@ -129,15 +129,6 @@ export async function GET(
             lookingFor: true
           }
         },
-        contactInfo: {
-          select: {
-            id: true,
-            email: true,
-            twitterUrl: true,
-            linkedinUrl: true,
-            scheduleUrl: true
-          }
-        }
       }
     });
     
@@ -418,9 +409,13 @@ export async function DELETE(request: Request) {
     }
 
     // Delete user and all related data (will cascade delete related records)
-    await prismaClient.user.delete({
-      where: { id: userId }
-    });
+
+    await prismaClient.$transaction([
+      prismaClient.project.deleteMany({ where: { userId } }),
+      prismaClient.startupinfo.deleteMany({ where: { userId } }),
+      prismaClient.contactInfo.deleteMany({ where: { userId } }),
+      prismaClient.user.delete({ where: { id: userId } }),
+    ]);
 
     // Delete user from Redis cache
     await redisClient.del(`user:${userId}`);

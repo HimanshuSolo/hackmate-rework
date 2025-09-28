@@ -279,12 +279,6 @@ export async function GET(req: NextRequest) {
       distance: (u as any).distance,
       pastProjects: u.pastProjects,
       startupInfo: u.startupInfo,
-      calendarLink: u.contactInfo?.scheduleUrl,
-      email: u.contactInfo?.email,
-      socialLinks: [
-        u.contactInfo?.linkedinUrl ? { platform: 'LinkedIn', url: u.contactInfo.linkedinUrl } : null,
-        u.contactInfo?.twitterUrl ? { platform: 'Twitter', url: u.contactInfo.twitterUrl } : null,
-      ].filter(Boolean),
     }));
 
     return NextResponse.json({
