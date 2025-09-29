@@ -39,6 +39,11 @@ const testimonials: TestimonialItem[] = [
         tweetId: "1970165220258509231",
     },
     {
+        type: "twitter",
+        id: "twitter-5",
+        tweetId: "1971986687451713916",
+    },
+    {
         type: "peerlist",
         id: "peerlist-1",
         author: {
