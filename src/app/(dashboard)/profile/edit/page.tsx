@@ -246,6 +246,17 @@ export default function ProfileEditForm() {
         },
       });
       
+      //update clerk pfp
+      if (values.avatar?.[0] && user) {
+        try {
+          console.log('Updating Clerk profile image...');
+          await user.setProfileImage({ file: values.avatar[0] });
+          console.log('Clerk profile image updated successfully');
+        } catch (clerkError) {
+          console.error('Error updating Clerk profile image:', clerkError);
+        }
+      }
+
       toast.success('Profile updated successfully');
       
       // Redirect to profile page

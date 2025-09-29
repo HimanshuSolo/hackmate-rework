@@ -163,8 +163,6 @@ import Image from "next/image"
         setIsLoading(false);
       }
     }, [userId, router]);
-
-
     
     const form = useForm<FormValues>({
       resolver: zodResolver(formSchema),
@@ -196,7 +194,6 @@ import Image from "next/image"
 
     async function onSubmit(values: FormValues) {
       setIsSubmitting(true)
-
       
       try {
         // Create FormData object for multipart/form-data submission
@@ -238,6 +235,16 @@ import Image from "next/image"
           },
         })
         
+        //update clerk pfp
+        if (values.avatar?.[0] && user) {
+          try {
+            console.log('Updating Clerk profile image...');
+            await user.setProfileImage({ file: values.avatar[0] });
+            console.log('Clerk profile image updated successfully');
+          } catch (clerkError) {
+            console.error('Error updating Clerk profile image:', clerkError);
+          }
+        }
         
         // Redirect to another page or show success message
         toast.success('Profile created successfully')
@@ -260,7 +267,7 @@ import Image from "next/image"
       }
     }
 
-      if (isLoading) {
+    if (isLoading) {
       return <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>;
