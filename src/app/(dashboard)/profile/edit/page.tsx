@@ -91,17 +91,40 @@ const personalityOptions = [
 ]
 
 const skillOptions = [
-  "JavaScript", "React", "Node.js", "Python", "Java",
-  "Product Management", "UI/UX Design", "Data Science",
-  "Machine Learning", "Marketing", "Sales", "Business Development"
-]
+    "Frontend Development",
+    "Backend Development",
+    "Full Stack Development",
+    "Mobile Development",
+    "UI/UX Design",
+    "Product Management",
+    "Business Development",
+    "Sales",
+    "Marketing & Growth",
+    "Finance & Accounting",
+    "Fundraising",
+    "Operations & Management",
+    "Data Science",
+    "Machine Learning / AI",
+    "Cloud & DevOps",
+    "Cybersecurity",
+    "Hardware Engineering",
+    "Research & Analysis",
+    "Legal & Compliance",
+    "People & HR"
+  ];
 
-const domainOptions = [
-  "SaaS", "E-commerce", "FinTech", "HealthTech",
-  "EdTech", "AI/ML", "Blockchain", "IoT",
-  "Mobile Apps", "Enterprise Software"
-]
-
+  const domainOptions = [
+  "Software Development",
+  "Product & Design",
+  "Business & Strategy",
+  "Growth & Marketing",
+  "Finance & Legal",
+  "Sales & Partnerships",
+  "Data & AI",
+  "Hardware & Engineering",
+  "Research & Innovation",
+  "People & Culture"
+];
 
 const mPlus1p = M_PLUS_1p({
     subsets: ['latin'],
