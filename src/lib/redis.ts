@@ -3,15 +3,49 @@
 import { createClient } from 'redis';
 import type { User } from '@prisma/client';
 
-// Create Redis client
+// Create Redis client (don't connect yet)
 const redisClient = createClient({
   url: process.env.REDIS_URL
 });
 
 redisClient.on('error', (err) => console.error('Redis error:', err));
 
-// Connect to Redis
-await redisClient.connect();
+// Connection state tracking
+let isConnecting = false;
+let isConnected = false;
+
+// Lazy connection function - only connect when needed
+async function ensureRedisConnection() {
+  // Skip connection during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    console.log('Skipping Redis connection during build phase');
+    return false;
+  }
+
+  if (isConnected) {
+    return true;
+  }
+
+  if (isConnecting) {
+    // Wait for existing connection attempt
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return isConnected;
+  }
+
+  try {
+    isConnecting = true;
+    await redisClient.connect();
+    isConnected = true;
+    console.log('Redis connected successfully');
+    return true;
+  } catch (error) {
+    console.error('Failed to connect to Redis:', error);
+    isConnected = false;
+    return false;
+  } finally {
+    isConnecting = false;
+  }
+}
 
 // Default TTL values (in seconds)
 const DEFAULT_TTL = {
@@ -23,27 +57,32 @@ const DEFAULT_TTL = {
 
 // User likes functions
 export async function addLike(userId: string, likedUserId: string): Promise<boolean> {
+  if (!await ensureRedisConnection()) return false;
   const result = await redisClient.sAdd(`likes:${userId}`, likedUserId);
   await redisClient.expire(`likes:${userId}`, DEFAULT_TTL.LIKES);
   return result === 1;
 }
 
 export async function hasLiked(userId: string, likedUserId: string): Promise<boolean> {
+  if (!await ensureRedisConnection()) return false;
   return await redisClient.sIsMember(`likes:${userId}`, likedUserId);
 }
 
 // Match queue functions
 export async function addToMatchQueue(userId: string, matchUserId: string): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   await redisClient.rPush(`matches:${userId}`, matchUserId);
   await redisClient.expire(`matches:${userId}`, DEFAULT_TTL.MATCHES);
 }
 
 export async function getNextMatch(userId: string): Promise<string | null> {
+  if (!await ensureRedisConnection()) return null;
   return await redisClient.lPop(`matches:${userId}`);
 }
 
 // User profile cache functions
 export async function cacheUserProfile(user: User): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   
   // Cache all fields needed for profile rendering
   const userCache = {
@@ -68,34 +107,41 @@ export async function cacheUserProfile(user: User): Promise<void> {
   await redisClient.expire(`user:${user.id}`, DEFAULT_TTL.USER_PROFILE);
 }
 export async function getCachedUserProfile(userId: string): Promise<Record<string, string> | null> {
+  if (!await ensureRedisConnection()) return null;
   const cachedUser = await redisClient.hGetAll(`user:${userId}`);
   return Object.keys(cachedUser).length > 0 ? cachedUser : null;
 }
 
 export async function invalidateUserCache(userId: string): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   await redisClient.del(`user:${userId}`);
 }
 
 // Viewed profiles functions (simple get/set with TTL)
 export async function addViewedProfile(userId: string, viewedId: string): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   await redisClient.sAdd(`viewed:${userId}`, viewedId);
   await redisClient.expire(`viewed:${userId}`, DEFAULT_TTL.VIEWED_PROFILES);
 }
 
 export async function getViewedProfiles(userId: string): Promise<string[]> {
+  if (!await ensureRedisConnection()) return [];
   return await redisClient.sMembers(`viewed:${userId}`);
 }
 
 export async function resetViewedProfiles(userId: string): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   await redisClient.del(`viewed:${userId}`);
 }
 
 export async function isProfileViewed(userId: string, profileId: string): Promise<boolean> {
+  if (!await ensureRedisConnection()) return false;
   return await redisClient.sIsMember(`viewed:${userId}`, profileId);
 }
 
 // Simple key-value set with TTL
 export async function setValue(key: string, value: string, ttl?: number): Promise<void> {
+  if (!await ensureRedisConnection()) return;
   await redisClient.set(key, value);
   if (ttl) {
     await redisClient.expire(key, ttl);
@@ -104,6 +150,7 @@ export async function setValue(key: string, value: string, ttl?: number): Promis
 
 // Simple key-value get
 export async function getValue(key: string): Promise<string | null> {
+  if (!await ensureRedisConnection()) return null;
   return await redisClient.get(key);
 }
 
