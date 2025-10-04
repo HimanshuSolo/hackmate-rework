@@ -3,7 +3,7 @@
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { ModeToggle } from './toggle-button'
-import { ChevronDown, Menu, UserRoundPen, UserSearch, Zap, Bookmark } from 'lucide-react'
+import { ChevronDown, Menu, UserRoundPen, UserSearch, Zap, Bookmark, Heart } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -117,6 +117,12 @@ export const Navbar = ({ showSignIn = true }: { showSignIn?: boolean }) => {
                               <Link href={'/explore'} className='flex items-center gap-2'>
                                   <UserSearch className='h-8 w-8 md:h-6 md:w-6'/>
                                   <span> Explore </span>
+                              </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                              <Link href={'/matches'} className='flex items-center gap-2'>
+                                  <Heart className='h-8 w-8 md:h-6 md:w-6 text-red-400'/>
+                                  <span> Matches </span>
                               </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
