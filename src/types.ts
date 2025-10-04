@@ -63,3 +63,16 @@ export type FilterOptions = {
     geohash: string;
   } | null;
 }
+
+export type ProfileCardProps = {
+  activeUser: User | null
+  x: any
+  rotate: any
+  opacity: any
+  likeOpacity: any
+  nopeOpacity: any
+  handleLike: () => void
+  handlePass: () => void
+  isBookmarked?: boolean
+  onBookmark?: () => void
+}

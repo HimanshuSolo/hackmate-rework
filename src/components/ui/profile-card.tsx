@@ -20,6 +20,7 @@ import {
   Users,
   ExternalLink,
   AlertCircle,
+  Bookmark,
 } from "lucide-react"
 import { M_PLUS_1p } from "next/font/google"
 import { 
@@ -43,6 +44,8 @@ export default function ProfileCard({
   nopeOpacity,
   handleLike,
   handlePass,
+  isBookmarked = false,
+  onBookmark,
 }: ProfileCardProps) {
   if (!activeUser) return null
 
@@ -263,7 +266,7 @@ export default function ProfileCard({
           </CardContent>
 
           {/* Card Footer (buttons) */}
-          <CardFooter className="flex justify-center gap-6 bg-neutral-900 pb-6 pt-2">
+          <CardFooter className="flex justify-center gap-4 bg-neutral-900 pb-6 pt-2">
             <Button
               size="icon"
               variant="outline"
@@ -271,6 +274,18 @@ export default function ProfileCard({
               onClick={handlePass}
             >
               <X className="h-6 w-6" />
+            </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className={`h-14 w-14 rounded-full shadow-md transition-colors ${
+                isBookmarked 
+                  ? 'bg-yellow-500/20 border-yellow-400 text-yellow-400' 
+                  : 'bg-neutral-950 border-neutral-600 text-neutral-400 hover:border-yellow-400 hover:text-yellow-400'
+              }`}
+              onClick={onBookmark}
+            >
+              <Bookmark className={`h-6 w-6 ${isBookmarked ? 'fill-current' : ''}`} />
             </Button>
             <Button
               size="icon"

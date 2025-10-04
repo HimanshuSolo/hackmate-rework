@@ -33,20 +33,25 @@ export default function Explore() {
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoadingUser, setIsLoadingUser] = useState(false)
   const [isRefreshingProfiles, setIsRefreshingProfiles] = useState(false)
+  const [bookmarkedProfiles, setBookmarkedProfiles] = useState<Set<string>>(new Set())
   
-  // Fetch current user data from API
   useEffect(() => {
     const fetchCurrentUser = async () => {
       if (!clerkUser?.id) return;
       
       setIsLoadingUser(true);
       try {
-        const response = await axios.get(`/api/user/${clerkUser.id}`);
+        const [userResponse, bookmarksResponse] = await Promise.all([
+          axios.get(`/api/user/${clerkUser.id}`),
+          axios.get('/api/bookmarks')
+        ]);
         
-        setCurrentUser(response.data);
+        setCurrentUser(userResponse.data);
+        const bookmarkIds = new Set<string>(bookmarksResponse.data.map((b: any) => String(b.profileId)));
+        setBookmarkedProfiles(bookmarkIds);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-          router.push('/onboarding'); // redirect to onboarding
+          router.push('/onboarding');
         }
         if(error instanceof Error){
           toast.error('Error while fetching user data');
@@ -114,6 +119,32 @@ const handleStartOver = useCallback(async () => {
     setIsRefreshingProfiles(false);
   }
 }, [resetViewedProfiles, refreshFilteredUsers, setCurrentIndex]);
+
+  // this handles bookmark add or remove
+  const handleBookmark = async () => {
+    const currentProfile = filteredUsers[currentIndex];
+    if (!currentProfile) return;
+
+    const isCurrentlyBookmarked = bookmarkedProfiles.has(currentProfile.id);
+    
+    try {
+      if (isCurrentlyBookmarked) {
+        await axios.delete(`/api/bookmarks?profileId=${currentProfile.id}`);
+        setBookmarkedProfiles(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(currentProfile.id);
+          return newSet;
+        });
+        toast.success('Removed from saved');
+      } else {
+        await axios.post('/api/bookmarks', { profileId: currentProfile.id });
+        setBookmarkedProfiles(prev => new Set(prev).add(currentProfile.id));
+        toast.success('Saved to bookmarks');
+      }
+    } catch (error) {
+      toast.error('Failed to update bookmark');
+    }
+  };
   
   const {
     x,
@@ -170,7 +201,8 @@ const handleStartOver = useCallback(async () => {
           nopeOpacity={nopeOpacity}
           handleLike={handleLike}
           handlePass={handlePass}
-          isMatch={matches.includes(filteredUsers[currentIndex].id)}
+          isBookmarked={bookmarkedProfiles.has(filteredUsers[currentIndex].id)}
+          onBookmark={handleBookmark}
         />
       </>
     )
