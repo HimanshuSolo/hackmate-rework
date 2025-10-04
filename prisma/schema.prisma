@@ -45,6 +45,8 @@ model User {
   matchesReceived   Match[]           @relation("UserB")
   viewsGiven        View[]            @relation("UserA")
   viewsReceived     View[]            @relation("UserB")
+  bookmarks         Bookmark[]        @relation("UserBookmarks")
+  bookmarkedBy      Bookmark[]        @relation("BookmarkedBy")
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   Admin Admin[]
@@ -143,4 +145,16 @@ model View {
   userB User @relation("UserB", fields: [userBId], references: [id])
 
   @@unique([userAId, userBId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  profileId String
+  createdAt DateTime @default(now())
+
+  user    User @relation("UserBookmarks", fields: [userId], references: [id])
+  profile User @relation("BookmarkedBy", fields: [profileId], references: [id])
+
+  @@unique([userId, profileId])
 }
