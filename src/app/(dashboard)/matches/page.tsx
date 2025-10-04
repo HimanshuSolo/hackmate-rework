@@ -37,7 +37,6 @@ export default function MatchesPage() {
   if (isLoading) return <LoadingState />
 
   const mutualMatches = matches.filter(m => m.mutual)
-  const likes = matches.filter(m => !m.mutual)
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -105,83 +104,6 @@ export default function MatchesPage() {
                     <div className="flex flex-wrap gap-1">
                       {match.profile.skills.slice(0, 3).map((skill: string) => (
                         <Badge key={skill} variant="secondary" className="text-xs bg-green-900/40 text-green-400">
-                          {skill}
-                        </Badge>
-                      ))}
-                      {match.profile.skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs text-neutral-400">
-                          +{match.profile.skills.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Likes Section */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Heart className="h-5 w-5 text-red-400" />
-          <h2 className="text-xl font-semibold text-white">Your Likes</h2>
-          <Badge variant="secondary" className="bg-red-900/40 text-red-400">
-            {likes.length}
-          </Badge>
-        </div>
-
-        {likes.length === 0 ? (
-          <div className="text-center py-8 bg-neutral-900/50 rounded-lg border border-neutral-800">
-            <Heart className="h-12 w-12 text-neutral-600 mx-auto mb-2" />
-            <p className="text-neutral-400">No likes yet</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {likes.map((match) => (
-              <Card 
-                key={match.id} 
-                className="bg-neutral-900 border-red-800/30 cursor-pointer hover:border-red-600/50 transition-colors"
-                onClick={() => {
-                  setSelectedProfile(match.profile)
-                  setDialogOpen(true)
-                }}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    {match.profile.avatarUrl ? (
-                      <img
-                        src={match.profile.avatarUrl}
-                        alt={match.profile.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                        <span className="text-red-400 font-semibold">
-                          {match.profile.name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="font-semibold text-white">{match.profile.name}</h3>
-                      <div className="flex items-center text-sm text-neutral-400">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {match.profile.location}
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center text-sm text-neutral-400 mb-3">
-                    <Briefcase className="h-3 w-3 mr-1" />
-                    {match.profile.currentRole} • {match.profile.yearsExperience}+ yrs
-                  </div>
-                  
-                  {match.profile.skills && match.profile.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {match.profile.skills.slice(0, 3).map((skill: string) => (
-                        <Badge key={skill} variant="secondary" className="text-xs bg-red-900/40 text-red-400">
                           {skill}
                         </Badge>
                       ))}
