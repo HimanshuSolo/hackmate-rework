@@ -62,6 +62,7 @@ export async function cacheUserProfile(user: User): Promise<void> {
     // Handle nested objects
     pastProjects: JSON.stringify(user.pastProjects || []),
     startupInfo: user.startupInfo ? JSON.stringify(user.startupInfo) : null,
+    contactInfo: user.contactInfo ? JSON.stringify(user.contactInfo) : null,
   };
   
   await redisClient.hSet(`user:${user.id}`, userCache);

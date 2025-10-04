@@ -151,9 +151,11 @@ export function useProfileFiltering(filters: FilterOptions) {
    */
   useEffect(() => {
     if (filterKey) {
+      setPage(1) // Reset page when filters change
+      setFilteredUsers([]) // Clear existing users
       fetchUsers(true)
     }
-  }, [filterKey, fetchUsers])
+  }, [filterKey]) // Remove fetchUsers from dependency to avoid stale closure
 
   /** ─────────────────────────────
    * Auto-load more when near end

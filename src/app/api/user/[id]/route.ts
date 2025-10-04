@@ -158,11 +158,17 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
     
-    // Process as multipart form data
-    const formData = await request.formData();
+    let userData;
+    const contentType = request.headers.get('content-type') || '';
     
-    // Parse the JSON data from the form
-    const userData = JSON.parse(formData.get('userData') as string);
+    if (contentType.includes('multipart/form-data')) {
+      // Process as multipart form data (when file upload is involved)
+      const formData = await request.formData();
+      userData = JSON.parse(formData.get('userData') as string);
+    } else {
+      // Process as JSON (when no file upload)
+      userData = await request.json();
+    }
     
     // Make sure the ID in the URL matches the ID in the data
     if (userData.id !== userId) {
@@ -259,12 +265,8 @@ export async function PUT(request: Request) {
         
         // Handle past projects
         if (validatedData.pastProjects) {
-          // Get existing project IDs
-          const existingProjectIds = existingUser?.pastProjects.map((p: { id: string; }) => p.id);
-          
-          if(!existingProjectIds){
-            throw Error("User doesn't have any existing projects")
-          }
+          // Get existing project IDs (empty array if no existing projects)
+          const existingProjectIds = existingUser?.pastProjects?.map((p: { id: string; }) => p.id) || [];
           
           // Get project IDs from the updated data
           const updatedProjectIds = validatedData.pastProjects
