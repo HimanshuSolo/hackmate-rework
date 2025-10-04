@@ -5,7 +5,6 @@
 
 
 **Live project:** [hackmate.app](https://hackmate.app/)
-
 ---
 
 ## Overview
@@ -114,13 +113,79 @@ Planned features include:
 * Project pitch cards and lightweight portfolios
 * Improved match feed and conversation prompts
 
----
 
-## Contributing
+Here’s a **`CONTRIBUTING.md`** file written in the same style as your `README.md` (no emojis, no AI buzzwords, no double dashes, and keeping the passion-project tone):
 
-Hackmate began as a side project to test whether swipe-style discovery could improve collaboration in builder communities. Contributions, ideas, and feedback are welcome. Open an issue, create a pull request, or reach out directly.
 
----
+# Contributing to Hackmate
+
+Thank you for your interest in contributing. Hackmate started as a side project to explore whether swipe-style discovery could improve how founders and builders connect. Every contribution, whether big or small, helps move the project forward.
+
+For Discussions Join : [Discord](https://discord.gg/E8MaEyD7ws)
+
+## How to Get Started
+
+1. **Fork the repository** and clone your fork locally.
+2. **Set up the environment** following the steps in the README.
+3. Create a new branch for your work with a descriptive name.
+4. Make your changes in small, focused commits.
+5. Run the linter and tests before pushing.
+6. Submit a pull request against the `main` branch.
+
+
+## Reporting Issues
+
+If you encounter a bug or want to suggest an improvement, open an issue. Please include:
+
+* A clear title and description.
+* Steps to reproduce the problem (if reporting a bug).
+* Expected behavior versus actual behavior.
+* Screenshots, logs, or environment details if relevant.
+
+For sensitive security-related issues, please do not file a public issue. Instead, reach out directly to the maintainer.
+
+## Suggesting Features
+
+Before starting work on a new feature, open an issue to discuss the idea. This helps ensure efforts are aligned with the direction of the project. Describe:
+
+* The problem you are solving.
+* The proposed solution.
+* Any impact on the existing data model or flows.
+
+
+## Code Guidelines
+
+* Follow existing patterns in the codebase.
+* Use TypeScript where possible to keep types clear and reduce errors.
+* Keep functions small and focused.
+
+
+## Development Environment
+
+* **Frontend:** Next.js with Tailwind CSS
+* **Backend:** Prisma with PostgreSQL
+* **Real-time:** Redis for caching and match detection
+* **Auth:** Clerk
+* **Hosting:** Vercel
+
+Environment variables are required for Redis and Postgres (see README).
+
+
+## Pull Requests
+
+When opening a pull request:
+
+* Reference any related issue.
+* Summarize the change in the PR description.
+* Add migration or setup notes if needed.
+* Keep PRs small and focused for easier review.
+
+
+## Community and Communication
+
+The project also has a community Discord server where contributors share ideas, feedback, and roadmaps. Once you make your first contribution, feel free to join and introduce yourself.
+
+
 
 ## License
 
