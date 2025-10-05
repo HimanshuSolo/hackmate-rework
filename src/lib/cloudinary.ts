@@ -1,8 +1,8 @@
 export class CloudinaryError extends Error {
   status?: number;
-  details?: any;
+  details?: unknown;
 
-  constructor(message: string, status?: number, details?: any) {
+  constructor(message: string, status?: number, details?: unknown) {
     super(message);
     this.name = "CloudinaryError";
     this.status = status;
