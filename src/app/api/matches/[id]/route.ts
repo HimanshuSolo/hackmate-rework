@@ -1,16 +1,14 @@
-import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server'
 import prismaClient from '@/lib/prsimadb'
 import { getValue, setValue } from '@/lib/redis'
 
-export async function GET() {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const cacheKey = `matches:${userId}`
+    const targetUserId = params.id
+    const cacheKey = `matches:${targetUserId}`
     
     const cachedMatches = await getValue(cacheKey)
     if (cachedMatches) {
@@ -20,8 +18,8 @@ export async function GET() {
     const matches = await prismaClient.match.findMany({
       where: {
         OR: [
-          { userAId: userId },
-          { userBId: userId }
+          { userAId: targetUserId },
+          { userBId: targetUserId }
         ]
       },
       include: {
@@ -45,13 +43,13 @@ export async function GET() {
       id: match.id,
       mutual: match.mutual,
       createdAt: match.createdAt,
-      profile: match.userAId === userId ? match.userB : match.userA
+      profile: match.userAId === targetUserId ? match.userB : match.userA
     }))
 
-    await setValue(cacheKey, JSON.stringify(formattedMatches), 30)
+    await setValue(cacheKey, JSON.stringify(formattedMatches), 300)
     
     return NextResponse.json(formattedMatches)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch matches' }, { status: 50 })
+    return NextResponse.json({ error: 'Failed to fetch matches' }, { status: 500 })
   }
 }
