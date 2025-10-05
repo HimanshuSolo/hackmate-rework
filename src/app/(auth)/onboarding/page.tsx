@@ -202,10 +202,10 @@ import { extractFormSubmitErrorMessages } from "@/lib/utils"
         let avatarUrl: string | undefined;
         
         // Add avatar file if it exists
-        // if (values.avatar?.[0]) {
-        //     const uploadResult = await uploadOnCloudinary(values.avatar[0]);
-        //     avatarUrl = uploadResult.secure_url;
-        // }
+        if (values.avatar?.[0]) {
+            const uploadResult = await uploadOnCloudinary(values.avatar[0]);
+            avatarUrl = uploadResult.secure_url;
+        }
         
         // Prepare the user data object
         const userData = {
