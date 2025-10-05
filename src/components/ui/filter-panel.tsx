@@ -15,13 +15,6 @@ import {
   DEFAULT_FILTERS,
 } from '../../constants'
 import { fetchAvailableSkillsAndDomains } from '@/lib/filter-utils'
-import { M_PLUS_1p } from "next/font/google"
-
-
-const mPlus1p = M_PLUS_1p({
-  subsets: ['latin'],
-  weight: ['100', '300', '400', '500', '700']
-})
 
 interface FilterPanelProps {
   filters: FilterOptions
@@ -104,7 +97,7 @@ export default function FilterPanel({
   }
   
   return (
-    <div className={`space-y-8 ${mPlus1p.className}`}>
+    <div className="space-y-8">
       {/* Experience Range */}
       <div>
         <h3 className="text-base font-semibold text-white/85 mb-2">Years of Experience</h3>

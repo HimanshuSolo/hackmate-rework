@@ -31,7 +31,6 @@ import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "sonner"
 import { uploadOnCloudinary } from '@/lib/cloudinary';
-import { M_PLUS_1p } from "next/font/google"
 
 
 // Constants for file upload
@@ -43,13 +42,13 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   avatar: z
     .custom<FileList>()
-    .refine((files) => !files || files.length === 0 || files.length === 1, "Only one image is allowed")
+    .refine((files: FileList | undefined) => !files || files.length === 0 || files.length === 1, "Only one image is allowed")
     .refine(
-      (files) => !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE,
+      (files: FileList | undefined) => !files || files.length === 0 || files[0]?.size <= MAX_FILE_SIZE,
       "Max file size is 5MB"
     )
     .refine(
-      (files) => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0].type),
+      (files: FileList | undefined) => !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported"
     )
     .optional(),
@@ -126,10 +125,7 @@ const skillOptions = [
   "People & Culture"
 ];
 
-const mPlus1p = M_PLUS_1p({
-    subsets: ['latin'],
-    weight: ['100', '300', '400', '500', '700']
-  })
+
 
 
 export default function ProfileEditForm() {
@@ -238,36 +234,47 @@ export default function ProfileEditForm() {
       if (values.avatar?.[0]) {
           const uploadResult = await uploadOnCloudinary(values.avatar[0]);
           avatarUrl = uploadResult.secure_url;
+      } else {
+          // Preserve existing avatar URL if no new file is uploaded
+          avatarUrl = avatarPreview || undefined;
       }
       
-      // Prepare the user data object
+      // Prepare the user data object, ensuring all required fields are present
       const userData = {
         id: user.id,
-        name: values.name,
-        description: values.description,
-        location: values.location,
-        personalityTags: values.personalityTags,
-        workingStyle: values.workingStyle,
-        collaborationPref: values.collaborationPref,
-        currentRole: values.currentRole,
-        yearsExperience: values.yearsExperience,
+        name: values.name || '',
+        description: values.description || undefined,
+        location: values.location || '',
+        personalityTags: values.personalityTags || [],
+        workingStyle: values.workingStyle || 'FLEXIBLE',
+        collaborationPref: values.collaborationPref || 'DOESNT_MATTER',
+        currentRole: values.currentRole || '',
+        yearsExperience: values.yearsExperience || 0,
         domainExpertise: values.domainExpertise || [],
-        skills: values.skills,
-        pastProjects: values.pastProjects,
-        startupInfo: values.startupInfo,
-        contactInfo: values.contactInfo,
+        skills: values.skills || [],
+        pastProjects: values.pastProjects || [],
+        startupInfo: values.startupInfo || undefined,
+        contactInfo: values.contactInfo || undefined,
         avatarUrl: avatarUrl,
       };
       
-      // Add the userData as a JSON string
-      formData.append('userData', JSON.stringify(userData));
-      
-      // Submit the form data to the API using PUT method for the specific user ID
-      await axios.put(`/api/user/${user.id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Submit the user data to the API using PUT method for the specific user ID
+      if (values.avatar?.[0]) {
+        // If there's a file upload, use FormData
+        formData.append('userData', JSON.stringify(userData));
+        await axios.put(`/api/user/${user.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        // If no file upload, send JSON directly
+        await axios.put(`/api/user/${user.id}`, userData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
       
       //update clerk pfp
       if (values.avatar?.[0] && user) {
@@ -285,7 +292,7 @@ export default function ProfileEditForm() {
       // Redirect to profile page
       router.push('/profile');
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating profile:', error);
       if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to update profile';
@@ -327,8 +334,8 @@ export default function ProfileEditForm() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-8 bg-neutral-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-white/85" style={{ ...mPlus1p.style, fontWeight: 700 }}>Edit Your Profile</h1>
-        <p className="text-gray-500 dark:text-gray-400" style={{ ...mPlus1p.style, fontWeight: 400 }}>
+        <h1 className="text-3xl font-bold text-white/85">Edit Your Profile</h1>
+        <p className="text-gray-500 dark:text-gray-400">
           Update your profile information and preferences.
         </p>
       </div>

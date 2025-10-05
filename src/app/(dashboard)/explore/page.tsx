@@ -72,7 +72,7 @@ export default function Explore() {
 
   const {
     filters,
-    handleFilterChange
+    handleFilterChange: originalHandleFilterChange
   } = useUserPreferences()
 
   const {
@@ -88,10 +88,10 @@ export default function Explore() {
     isLoading: isLoadingProfiles,
     viewCurrentProfile
   } = useProfileFiltering({
-    ...filters,
-    userCoordinates: userCoordinates
-  });
-
+  ...filters,
+  userCoordinates: userCoordinates
+});
+  
   // Handle starting over
   const handleStartOver = useCallback(async () => {
     setIsRefreshingProfiles(true);
