@@ -30,7 +30,7 @@ const userCreateSchema = z.object({
     stage: z.enum(['IDEA', 'MVP', 'SCALING', 'EXITED']),
     goals: z.string(),
     commitment: z.enum(['EXPLORING', 'BUILDING', 'LAUNCHING', 'FULL_TIME_READY']),
-    lookingFor: z.array(z.string())
+    lookingFor: z.array(z.string()).optional(),
   }).optional(),
   contactInfo: z.object({
     email: z.string().email().optional(),
