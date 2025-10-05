@@ -43,7 +43,7 @@ export function useProfileFiltering(filters: FilterOptions) {
   const fetchMutualMatches = useCallback(async () => {
     if (!clerkUser?.id) return
     try {
-      const { data } = await axios.get(`/api/matches/${clerkUser.id}`, {
+      const { data } = await axios.get('/api/matches', {
         params: { mutual: true },
       })
       if (data?.matches) {
