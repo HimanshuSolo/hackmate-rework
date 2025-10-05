@@ -73,6 +73,4 @@ export type ProfileCardProps = {
   nopeOpacity: any
   handleLike: () => void
   handlePass: () => void
-  isBookmarked?: boolean
-  onBookmark?: () => void
 }

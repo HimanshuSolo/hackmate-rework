@@ -22,7 +22,7 @@ export default function MatchesPage() {
       if (!user?.id) return
       
       try {
-        const response = await axios.get('/api/matches')
+        const response = await axios.get(`/api/matches/${user.id}`)
         setMatches(response.data)
       } catch (error) {
         toast.error('Failed to load matches')
