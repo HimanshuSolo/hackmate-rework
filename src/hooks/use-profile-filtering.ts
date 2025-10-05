@@ -44,7 +44,7 @@ export function useProfileFiltering(filters: FilterOptions) {
     if (!clerkUser?.id) return
     try {
       const { data } = await axios.get('/api/matches', {
-        params: { mutual: true },
+        params: { userId: clerkUser.id, mutual: true },
       })
       if (data?.matches) {
         const ids = data.matches.map((m: { userAId: string; userBId: string }) =>
