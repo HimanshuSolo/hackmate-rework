@@ -175,7 +175,7 @@ export default function ProfileEditForm() {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`/api/user/${user.id}/editProfile`);
+        const response = await axios.get(`/api/user/${user.id}`);
         const userData = response.data;
         
         // Set avatar preview if exists

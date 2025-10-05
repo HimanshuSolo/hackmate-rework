@@ -129,6 +129,14 @@ export async function GET(
             lookingFor: true
           }
         },
+        contactInfo: {
+          select: {
+            email: true,
+            twitterUrl: true,
+            linkedinUrl: true,
+            scheduleUrl: true
+          }
+        },
       }
     });
     
