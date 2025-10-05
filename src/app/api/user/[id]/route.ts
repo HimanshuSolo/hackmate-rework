@@ -131,6 +131,7 @@ export async function GET(
         },
         contactInfo: {
           select: {
+            id: true,
             email: true,
             twitterUrl: true,
             linkedinUrl: true,
