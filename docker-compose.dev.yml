@@ -1,0 +1,37 @@
+# =============================================================================
+# Docker Compose - Development Configuration
+# =============================================================================
+# Purpose: Override production settings for local development
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# =============================================================================
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    
+    command: npm run dev
+    
+    volumes:
+      - ./src:/app/src:delegated
+      - ./public:/app/public:delegated
+      - ./prisma:/app/prisma:delegated
+      - /app/node_modules
+      - /app/.next
+    
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://hackmate:hackmate_dev_password@postgres:5432/hackmate_dev?schema=public
+
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD=hackmate_dev_password
+      - POSTGRES_DB=hackmate_dev
+
+  redis:
+    ports:
+      - "6379:6379"
