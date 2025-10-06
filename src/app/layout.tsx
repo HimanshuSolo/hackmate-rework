@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { dark } from '@clerk/themes';
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next';
-
+import './fonts.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

@@ -30,9 +30,10 @@
   import { X, Plus } from "lucide-react"
   import { useUser } from "@clerk/nextjs"
   import { toast } from "sonner"
-  import { uploadOnCloudinary } from '@/lib/cloudinary';
+  import { CloudinaryError, uploadOnCloudinary } from '@/lib/cloudinary';
   import { M_PLUS_1p } from "next/font/google"
-import Image from "next/image"
+  import Image from "next/image"
+import { extractFormSubmitErrorMessages } from "@/lib/utils"
 
   const mPlus1p = M_PLUS_1p({
     subsets: ['latin'],
@@ -250,22 +251,36 @@ import Image from "next/image"
         toast.success('Profile created successfully')
         router.push('/explore') // Adjust the route as needed
         
-      } catch (error) {
-        if(error instanceof Error){
-          console.error('Error submitting form:', error.message);
-          toast.error('Error submitting form')
-        }
-        // Handle error - show message to user
-        else if (axios.isAxiosError(error)) {
-          // Handle specific axios errors
-          toast.error('An unexpected error occurred');
-        } else {
-          toast.error('An unexpected error occurred');
-        }
-      } finally {
+      }catch (error) {
+          let message = 'Unexpected error occurred.';
+
+          // Cloudinary-specific errors
+          if (error instanceof CloudinaryError) {
+            console.error('Cloudinary upload failed:', error.details);
+            message = error.message;
+
+          // Axios / API errors
+          } else if (axios.isAxiosError(error)) {
+            // Try to get message from response.data.error or response.data.message
+            message =
+              error.response?.data?.error ||
+              error.response?.data?.message ||
+              error.message;
+
+          // Generic JS errors
+          } else if (error instanceof Error) {
+            message = error.message;
+          }
+
+          toast.error(message);
+          console.error(error); // Log full error for debugging
+        } finally {
         setIsSubmitting(false)
       }
     }
+
+    const onError = (formErrors: typeof form.formState.errors) =>
+      extractFormSubmitErrorMessages(formErrors).forEach(msg => toast.warning(msg));
 
     if (isLoading) {
       return <div className="flex justify-center items-center min-h-screen">
@@ -286,7 +301,7 @@ import Image from "next/image"
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}

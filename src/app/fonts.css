@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'M PLUS 1p';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/mplus1p-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/chakrapetch-regular.woff2') format('woff2');
+}
